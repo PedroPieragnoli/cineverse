@@ -1,0 +1,85 @@
+name: Cineverse
+
+options:
+  bundleIdPrefix: com.github.pedropieragnoli
+  deploymentTarget:
+    iOS: "18.5"
+  developmentLanguage: en
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+  usesTabs: false
+  indentWidth: 4
+  tabWidth: 4
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.5"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  Cineverse:
+    type: application
+    platform: iOS
+    sources:
+      - path: Cineverse
+    preBuildScripts:
+      - name: SwiftLint
+        script: |
+          if command -v swiftlint >/dev/null 2>&1; then
+            swiftlint lint --config "${PROJECT_DIR}/.swiftlint.yml"
+          else
+            echo "warning: SwiftLint not installed, install with 'brew install swiftlint'"
+          fi
+        basedOnDependencyAnalysis: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.pedropieragnoli.Cineverse
+        PRODUCT_NAME: Cineverse
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+        SWIFT_EMIT_LOC_STRINGS: YES
+
+  CineverseTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: CineverseTests
+    dependencies:
+      - target: Cineverse
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.pedropieragnoli.CineverseTests
+        PRODUCT_NAME: CineverseTests
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_EMIT_LOC_STRINGS: NO
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Cineverse.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cineverse"
+
+  CineverseUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: CineverseUITests
+    dependencies:
+      - target: Cineverse
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.pedropieragnoli.CineverseUITests
+        PRODUCT_NAME: CineverseUITests
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_EMIT_LOC_STRINGS: NO
+        TEST_TARGET_NAME: Cineverse
