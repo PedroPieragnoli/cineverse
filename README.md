@@ -15,6 +15,17 @@ A native iOS movie discovery app built with SwiftUI.
 2. Generate project: `xcodegen generate`
 3. Open in Xcode: `open Cineverse.xcodeproj`
 
+## Building
+
+```bash
+# Using the build script (recommended)
+bash build.sh
+
+# Or manually with xcodebuild
+xcodebuild -project Cineverse.xcodeproj -scheme Cineverse \
+  -destination 'platform=iOS Simulator,name=iPhone 16' build
+```
+
 ## Code Quality
 
 This project uses SwiftLint to enforce code style.
