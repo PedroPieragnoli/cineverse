@@ -1,0 +1,8 @@
+/* Accessibility hint for movie card */
+"accessibility.movieCard.hint" = "Double tap to view details";
+
+/* Accessibility description when poster is missing */
+"accessibility.poster.noImage" = "No image available";
+
+/* Accessibility description when poster fails to load */
+"accessibility.poster.loadFailed" = "Image failed to load";

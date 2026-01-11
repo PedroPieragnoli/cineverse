@@ -19,12 +19,19 @@ settings:
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
 
+packages:
+  Kingfisher:
+    url: https://github.com/onevcat/Kingfisher
+    from: "8.0.0"
+
 targets:
   Cineverse:
     type: application
     platform: iOS
     sources:
       - path: Cineverse
+    dependencies:
+      - package: Kingfisher
     preBuildScripts:
       - name: SwiftLint
         script: |
