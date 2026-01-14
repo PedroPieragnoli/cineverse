@@ -6,6 +6,19 @@ set -e  # Exit on error
 
 echo "🔨 Building Cineverse..."
 
+# Generate Xcode project from project.yml
+echo "📦 Generating Xcode project..."
+if ! command -v xcodegen &> /dev/null; then
+  echo "❌ XcodeGen not installed. Install with: brew install xcodegen"
+  exit 1
+fi
+
+if ! xcodegen generate; then
+  echo "❌ XcodeGen failed to generate project!"
+  exit 1
+fi
+echo "✅ Xcode project generated!"
+
 # Run SwiftLint
 echo "🔍 Running SwiftLint..."
 if command -v swiftlint &> /dev/null; then
