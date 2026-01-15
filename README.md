@@ -11,7 +11,7 @@ A native iOS movie discovery app built with SwiftUI, featuring pixel-perfect UI 
 
 ## Requirements
 
-- iOS 18.5+
+- iOS 18.0+
 - Xcode 16+
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 - [SwiftLint](https://github.com/realm/SwiftLint) (optional)
