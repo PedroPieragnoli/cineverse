@@ -6,57 +6,76 @@
 import Foundation
 import SwiftUI
 
-/// Shared design tokens used across the app for consistent styling.
 enum DesignSystem {
-    // MARK: - Colors
-
     enum Colors {
-        /// Placeholder background brightness (very dark gray)
-        static let placeholderBrightness: CGFloat = 0.1
-
-        /// Standard card background color
-        static var cardBackground: Color {
-            Color(white: placeholderBrightness)
-        }
+        static let primary = Color(hex: "#9F2BFF")
+        static let background = Color.black
+        static let surface = Color(hex: "#121212")
+        static let cardBackground = Color(hex: "#111827")
+        static let buttonSecondaryBackground = Color.white.opacity(0.15)
+        static let buttonSecondaryBorder = Color.white.opacity(0.2)
+        static let secondaryText = Color(hex: "#9CA3AF")
+        static let metadataText = Color(hex: "#A1A1A1")
+        static let heroDescriptionText = Color(hex: "#E5E7EB")
     }
-
-    // MARK: - Corner Radius
 
     enum CornerRadius {
-        /// Standard corner radius for cards (12pt)
         static let card: CGFloat = 12
+        static let button: CGFloat = 12
     }
 
-    // MARK: - Opacity
-
     enum Opacity {
-        /// Subtle border overlay (0.1)
         static let subtleBorder: CGFloat = 0.1
-        /// Disabled/placeholder state (0.3)
         static let disabled: CGFloat = 0.3
-        /// Loading indicator (0.6)
         static let loading: CGFloat = 0.6
     }
 
-    // MARK: - Animation
-
     enum Animation {
-        /// Standard transition duration (0.3s)
         static let standard: TimeInterval = 0.3
     }
 
-    // MARK: - Borders
-
     enum Borders {
-        /// Standard border width (1pt)
         static let standard: CGFloat = 1
     }
 
-    // MARK: - Strings
-
     enum Strings {
-        static let doubleTapToViewDetails = NSLocalizedString("accessibility.movieCard.hint", comment: "")
-        static let noImageAvailable = NSLocalizedString("accessibility.poster.noImage", comment: "")
-        static let imageFailedToLoad = NSLocalizedString("accessibility.poster.loadFailed", comment: "")
+        static let doubleTapToViewDetails = String(localized: "accessibility.movieCard.hint")
+        static let noImageAvailable = String(localized: "accessibility.poster.noImage")
+        static let imageFailedToLoad = String(localized: "accessibility.poster.loadFailed")
+        static let profileButtonLabel = String(localized: "accessibility.profileButton.label")
+    }
+
+    enum Spacing {
+        static let xxs: CGFloat = 4
+        static let xs: CGFloat = 8
+        static let sm: CGFloat = 12
+        static let md: CGFloat = 16
+        static let lg: CGFloat = 24
+        static let xl: CGFloat = 32
+        static let xxl: CGFloat = 48
+        static let xxxl: CGFloat = 64
+    }
+
+    enum Typography {
+        static let heroTitle: Font = .system(size: 36, weight: .heavy)
+        static let sectionTitle: Font = .system(size: 16, weight: .bold)
+        static let cardTitle: Font = .system(size: 14, weight: .semibold)
+        static let caption: Font = .system(size: 10, weight: .regular)
+        static let metadata: Font = .system(size: 14, weight: .medium)
+        static let buttonTitle: Font = .system(size: 14, weight: .bold)
+        static let appTitle: Font = .system(size: 20, weight: .bold)
+        static let heroDescription: Font = .system(size: 12, weight: .medium)
+    }
+
+    enum Layout {
+        static let horizontalPadding: CGFloat = 20
+        static let heroHeightRatio: CGFloat = 0.8
+        static let heroBottomGapRatio: CGFloat = 0.10
+        static let continueWatchingCardWidth: CGFloat = 240
+        static let tabBarHeight: CGFloat = 64
+        static let buttonHeight: CGFloat = 44
+        static let profileAvatarSize: CGFloat = 40
+        static let logoIconSize: CGFloat = 28
+        static let placeholderIconSize: CGFloat = 60
     }
 }
