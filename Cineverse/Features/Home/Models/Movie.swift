@@ -15,7 +15,7 @@ struct Movie: Codable, Identifiable, Hashable {
     let overview: String
     let popularity: Double
     let posterPath: String?
-    let releaseDate: String
+    let releaseDate: String?
     let title: String
     let video: Bool
     let voteAverage: Double
@@ -51,19 +51,65 @@ struct Movie: Codable, Identifiable, Hashable {
         return TMDBConfiguration.backdropURL(for: backdropPath, size: .original)
     }
 
+    var releaseYear: String {
+        guard let releaseDate, let date = MovieDateFormatter.parse(releaseDate) else {
+            return ""
+        }
+        return MovieDateFormatter.releaseYear(from: date)
+    }
+
     var formattedReleaseDate: String {
-        guard let date = DateFormatter.tmdbDateParser.date(from: releaseDate) else {
+        guard let releaseDate else { return "" }
+
+        guard let date = MovieDateFormatter.parse(releaseDate) else {
             return releaseDate
         }
 
-        return DateFormatter.movieDisplayDate.string(from: date)
+        return MovieDateFormatter.formattedReleaseDate(from: date)
     }
 
     var ratingPercentage: Int {
-        Int(voteAverage * 10)
+        min(max(Int(voteAverage * 10), 0), 100)
     }
 
     var ratingFormatted: String {
-        String(format: "%.1f", voteAverage)
+        voteAverage.formatted(.number.precision(.fractionLength(1)))
+    }
+}
+
+private enum MovieDateFormatter {
+    private static let tmdbTimeZone = TimeZone(secondsFromGMT: 0) ?? .current
+
+    private static let tmdbCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = tmdbTimeZone
+        return calendar
+    }()
+
+    private static let tmdbDateParseStrategy = Date.ParseStrategy(
+        format: "\(year: .defaultDigits)-\(month: .twoDigits)-\(day: .twoDigits)",
+        locale: Locale(identifier: "en_US_POSIX"),
+        timeZone: tmdbTimeZone,
+        calendar: tmdbCalendar
+    )
+
+    private static let releaseDateDisplayStyle: Date.FormatStyle = {
+        var style = Date.FormatStyle(date: .abbreviated, time: .omitted)
+        style.calendar = tmdbCalendar
+        style.timeZone = tmdbTimeZone
+        style.locale = Locale.current
+        return style
+    }()
+
+    static func parse(_ dateString: String) -> Date? {
+        try? tmdbDateParseStrategy.parse(dateString)
+    }
+
+    static func releaseYear(from date: Date) -> String {
+        String(tmdbCalendar.component(.year, from: date))
+    }
+
+    static func formattedReleaseDate(from date: Date) -> String {
+        date.formatted(releaseDateDisplayStyle)
     }
 }
