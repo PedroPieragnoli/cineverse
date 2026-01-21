@@ -19,29 +19,38 @@ struct MoviePosterCardView: View {
 
     let movie: Movie
     let width: CGFloat
+    var onTap: (() -> Void)?
 
     @State private var loadFailed = false
 
-    init(movie: Movie, width: CGFloat = Layout.defaultWidth) {
+    init(movie: Movie, width: CGFloat = Layout.defaultWidth, onTap: (() -> Void)? = nil) {
         self.movie = movie
         self.width = width
+        self.onTap = onTap
     }
 
     var body: some View {
-        posterImage
-            .frame(width: width, height: width * Layout.heightMultiplier)
-            .clipShape(cardShape)
-            .overlay {
-                cardShape.strokeBorder(
-                    .white.opacity(DesignSystem.Opacity.subtleBorder),
-                    lineWidth: DesignSystem.Borders.standard
-                )
-            }
-            .contentShape(.rect)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(accessibilityDescription)
-            .accessibilityHint(DesignSystem.Strings.doubleTapToViewDetails)
-            .accessibilityAddTraits(.isButton)
+        Button {
+            onTap?()
+        } label: {
+            posterImage
+                .accessibilityHidden(true)
+                .frame(width: width, height: width * Layout.heightMultiplier)
+                .clipShape(cardShape)
+                .overlay {
+                    cardShape.strokeBorder(
+                        .white.opacity(DesignSystem.Opacity.subtleBorder),
+                        lineWidth: DesignSystem.Borders.standard
+                    )
+                }
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+        .onChange(of: movie.posterURL) { _, _ in
+            loadFailed = false
+        }
     }
 
     // MARK: - Shapes
