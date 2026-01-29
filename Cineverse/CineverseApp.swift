@@ -9,7 +9,8 @@ import SwiftUI
 struct CineverseApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
+                .preferredColorScheme(.dark)
         }
     }
 }
