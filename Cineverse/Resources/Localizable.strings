@@ -6,3 +6,48 @@
 
 /* Accessibility description when poster fails to load */
 "accessibility.poster.loadFailed" = "Image failed to load";
+
+/* Accessibility label for the profile button in the home header */
+"accessibility.profileButton.label" = "Profile";
+
+/* Title for the hero play button on home screen */
+"home.heroButton.play.title" = "Watch";
+
+/* Title for the hero add-to-list button on home screen */
+"home.heroButton.myList.title" = "My List";
+
+/* Remaining watch time format */
+"continueWatching.remaining.left" = "%@ left";
+
+/* Continue Watching section title on home screen */
+"continueWatching.sectionTitle" = "Continue Watching";
+
+/* Accessibility label for continue watching card with title, watched progress, and remaining time */
+"continueWatching.card.accessibilityDescription" = "%@, %d%% watched, %@";
+
+/* Trending section title on home screen */
+"home.sectionTitle.trending" = "Trending";
+
+/* New Releases section title on home screen */
+"home.sectionTitle.newReleases" = "New Releases";
+
+/* Remaining watch time fallback for short formatting */
+"continueWatching.remaining.zero.short" = "0m";
+
+/* Remaining watch time fallback for accessibility formatting */
+"continueWatching.remaining.zero.full" = "0 minutes";
+
+/* Tab title for Home */
+"tab.home.title" = "Home";
+
+/* Tab title for Search */
+"tab.search.title" = "Search";
+
+/* Tab title for Coming Soon */
+"tab.comingSoon.title" = "Coming Soon";
+
+/* Tab title for My List */
+"tab.myList.title" = "My List";
+
+/* Placeholder subtitle for tabs that are not implemented yet */
+"mainTab.placeholder.comingSoon" = "Coming soon";
