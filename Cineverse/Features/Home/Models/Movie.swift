@@ -21,24 +21,6 @@ struct Movie: Codable, Identifiable, Hashable {
     let voteAverage: Double
     let voteCount: Int
 
-    // MARK: - CodingKeys
-    enum CodingKeys: String, CodingKey {
-        case id
-        case adult
-        case backdropPath = "backdrop_path"
-        case genreIds = "genre_ids"
-        case originalLanguage = "original_language"
-        case originalTitle = "original_title"
-        case overview
-        case popularity
-        case posterPath = "poster_path"
-        case releaseDate = "release_date"
-        case title
-        case video
-        case voteAverage = "vote_average"
-        case voteCount = "vote_count"
-    }
-
     // MARK: - Computed Properties
 
     var posterURL: URL? {

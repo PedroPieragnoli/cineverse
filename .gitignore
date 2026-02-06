@@ -64,3 +64,6 @@ Pods/
 # Tuist
 graph.png
 .signing/
+
+# Local secrets
+Config/Secrets.xcconfig

@@ -28,6 +28,9 @@ targets:
   Cineverse:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Config/Debug.xcconfig
+      Release: Config/Release.xcconfig
     attributes:
       DevelopmentTeam: ${PERSONAL_SIGNING_ACCOUNT}
       ProvisioningStyle: Automatic
@@ -59,8 +62,11 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_TMDB_BASE_URL: $(TMDB_BASE_URL)
+        INFOPLIST_KEY_TMDB_READ_ACCESS_TOKEN: $(TMDB_READ_ACCESS_TOKEN)
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
         SWIFT_EMIT_LOC_STRINGS: YES
+        TMDB_BASE_URL: https://api.themoviedb.org/3
 
   CineverseTests:
     type: bundle.unit-test
