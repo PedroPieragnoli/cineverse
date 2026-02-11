@@ -24,6 +24,28 @@ packages:
     url: https://github.com/onevcat/Kingfisher
     from: "8.0.0"
 
+schemes:
+  Cineverse:
+    shared: true
+    build:
+      targets:
+        Cineverse: all
+        CineverseTests: [test]
+        CineverseUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - name: CineverseTests
+        - name: CineverseUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
 targets:
   Cineverse:
     type: application
@@ -56,14 +78,8 @@ targets:
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: ${PERSONAL_SIGNING_ACCOUNT}
         ENABLE_PREVIEWS: YES
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
-        INFOPLIST_KEY_TMDB_BASE_URL: $(TMDB_BASE_URL)
-        INFOPLIST_KEY_TMDB_READ_ACCESS_TOKEN: $(TMDB_READ_ACCESS_TOKEN)
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Cineverse/Info.plist
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
         SWIFT_EMIT_LOC_STRINGS: YES
         TMDB_BASE_URL: https://api.themoviedb.org/3
