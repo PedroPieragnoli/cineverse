@@ -11,7 +11,6 @@ struct TMDBEnvironmentTests {
     @Test("Environment loads token and base URL from configuration values")
     func loadsConfiguredValues() {
         let environment = TMDBEnvironment.make(
-            environmentValues: [:],
             infoDictionary: [
                 "TMDB_BASE_URL": "https://custom.tmdb.test/3",
                 "TMDB_READ_ACCESS_TOKEN": "abc123"
@@ -26,7 +25,6 @@ struct TMDBEnvironmentTests {
     @Test("Environment falls back when locale has no region")
     func localeFallbackBehavior() {
         let environment = TMDBEnvironment.make(
-            environmentValues: [:],
             infoDictionary: [:],
             locale: Locale(identifier: "en")
         )
@@ -38,8 +36,7 @@ struct TMDBEnvironmentTests {
     @Test("Environment uses default base URL when configured value is invalid")
     func invalidBaseURLFallsBack() {
         let environment = TMDBEnvironment.make(
-            environmentValues: ["TMDB_BASE_URL": "invalid-url"],
-            infoDictionary: [:],
+            infoDictionary: ["TMDB_BASE_URL": "invalid-url"],
             locale: Locale(identifier: "en_US")
         )
 
@@ -49,8 +46,7 @@ struct TMDBEnvironmentTests {
     @Test("Environment rejects insecure HTTP base URL")
     func insecureHTTPBaseURLFallsBack() {
         let environment = TMDBEnvironment.make(
-            environmentValues: ["TMDB_BASE_URL": "http://custom.tmdb.test/3"],
-            infoDictionary: [:],
+            infoDictionary: ["TMDB_BASE_URL": "http://custom.tmdb.test/3"],
             locale: Locale(identifier: "en_US")
         )
 
@@ -60,8 +56,7 @@ struct TMDBEnvironmentTests {
     @Test("Environment rejects non-standard HTTP-like schemes")
     func nonStandardHTTPBaseURLFallsBack() {
         let environment = TMDBEnvironment.make(
-            environmentValues: ["TMDB_BASE_URL": "http+unix://socket/path"],
-            infoDictionary: [:],
+            infoDictionary: ["TMDB_BASE_URL": "http+unix://socket/path"],
             locale: Locale(identifier: "en_US")
         )
 
@@ -71,8 +66,7 @@ struct TMDBEnvironmentTests {
     @Test("Environment accepts HTTPS scheme regardless of case")
     func uppercaseHTTPSBaseURLIsAccepted() {
         let environment = TMDBEnvironment.make(
-            environmentValues: ["TMDB_BASE_URL": "HTTPS://custom.tmdb.test/3"],
-            infoDictionary: [:],
+            infoDictionary: ["TMDB_BASE_URL": "HTTPS://custom.tmdb.test/3"],
             locale: Locale(identifier: "en_US")
         )
 
@@ -81,14 +75,23 @@ struct TMDBEnvironmentTests {
         #expect(environment.baseURL.path == "/3")
     }
 
-    @Test("Environment reads process environment values before info dictionary")
-    func processEnvironmentTakesPrecedence() {
+    @Test("Environment reads token from info dictionary")
+    func readsTokenFromInfoDictionary() {
         let environment = TMDBEnvironment.make(
-            environmentValues: ["TMDB_READ_ACCESS_TOKEN": "from-env"],
             infoDictionary: ["TMDB_READ_ACCESS_TOKEN": "from-info"],
             locale: Locale(identifier: "en_US")
         )
 
-        #expect(environment.readAccessToken == "from-env")
+        #expect(environment.readAccessToken == "from-info")
+    }
+
+    @Test("Environment trims wrapping quotes from configured token values")
+    func quotedTokenIsNormalized() {
+        let environment = TMDBEnvironment.make(
+            infoDictionary: ["TMDB_READ_ACCESS_TOKEN": "\"quoted-token\""],
+            locale: Locale(identifier: "en_US")
+        )
+
+        #expect(environment.readAccessToken == "quoted-token")
     }
 }

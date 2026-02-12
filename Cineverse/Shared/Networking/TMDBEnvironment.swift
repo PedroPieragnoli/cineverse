@@ -29,30 +29,25 @@ struct TMDBEnvironment: Sendable {
     }
 
     static func live(
-        processInfo: ProcessInfo = .processInfo,
         bundle: Bundle = .main,
         locale: Locale = .current
     ) -> TMDBEnvironment {
         make(
-            environmentValues: processInfo.environment,
             infoDictionary: bundle.infoDictionary ?? [:],
             locale: locale
         )
     }
 
     static func make(
-        environmentValues: [String: String],
         infoDictionary: [String: Any],
         locale: Locale
     ) -> TMDBEnvironment {
         let configuredBaseURLString = nonEmptyValue(
-            environmentValues["TMDB_BASE_URL"],
             infoDictionary["TMDB_BASE_URL"] as? String
         )
         let baseURL = validatedBaseURL(configuredBaseURLString) ?? defaultBaseURL
 
         let token = nonEmptyValue(
-            environmentValues["TMDB_READ_ACCESS_TOKEN"],
             infoDictionary["TMDB_READ_ACCESS_TOKEN"] as? String
         )
 
@@ -69,8 +64,22 @@ struct TMDBEnvironment: Sendable {
 
     private static func nonEmptyValue(_ values: String?...) -> String? {
         values
-            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .compactMap { normalizedValue($0) }
             .first { !$0.isEmpty }
+    }
+
+    private static func normalizedValue(_ value: String?) -> String? {
+        guard var trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            return nil
+        }
+
+        // Xcode may preserve quoted xcconfig values in Info.plist.
+        if trimmed.hasPrefix("\""), trimmed.hasSuffix("\""), trimmed.count >= 2 {
+            trimmed.removeFirst()
+            trimmed.removeLast()
+        }
+
+        return trimmed.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private static func isValidBaseURL(_ url: URL?) -> Bool {
