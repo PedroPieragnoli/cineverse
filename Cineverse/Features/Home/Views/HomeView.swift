@@ -8,16 +8,11 @@ import SwiftUI
 struct HomeView: View {
     // MARK: - Properties
 
-    @State private var viewModel: HomeViewModel
+    private let viewModel: HomeViewModel
     @State private var scrollOffset: CGFloat = 0
 
     init(viewModel: HomeViewModel) {
-        _viewModel = State(initialValue: viewModel)
-    }
-
-    @MainActor
-    init() {
-        _viewModel = State(initialValue: HomeViewModel())
+        self.viewModel = viewModel
     }
 
     var body: some View {
@@ -103,12 +98,12 @@ struct HomeView: View {
 
 #if DEBUG
 #Preview("Home View") {
-    HomeView()
+    HomeView(viewModel: HomeViewModel(repository: PreviewHomeRepository()))
         .preferredColorScheme(.dark)
 }
 
 #Preview("Home View - Loading") {
-    HomeView()
+    HomeView(viewModel: HomeViewModel(repository: PreviewHomeRepository()))
         .preferredColorScheme(.dark)
 }
 #endif

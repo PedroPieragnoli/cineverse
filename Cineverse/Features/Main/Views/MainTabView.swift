@@ -14,7 +14,15 @@ struct MainTabView: View {
     @MainActor
     init(initialTab: TabItem = .home) {
         _selectedTab = State(initialValue: initialTab)
-        _homeViewModel = State(initialValue: HomeViewModel())
+        #if DEBUG
+        _homeViewModel = State(
+            initialValue: HomeViewModel(repository: PreviewHomeRepository())
+        )
+        #else
+        _homeViewModel = State(
+            initialValue: HomeViewModel(repository: DefaultHomeRepository.live())
+        )
+        #endif
     }
 
     var body: some View {

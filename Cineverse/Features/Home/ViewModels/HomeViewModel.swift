@@ -8,6 +8,7 @@ import Foundation
 @MainActor
 @Observable
 final class HomeViewModel {
+    private let repository: HomeRepository
 
     var featuredMovie: FeaturedMovie?
     var continueWatching: [ContinueWatchingItem] = []
@@ -16,6 +17,10 @@ final class HomeViewModel {
     var isLoading = false
     var error: Error?
     private(set) var hasLoadedInitialData = false
+
+    init(repository: HomeRepository = DefaultHomeRepository.live()) {
+        self.repository = repository
+    }
 
     var sections: [HomeSection] {
         [
@@ -37,13 +42,21 @@ final class HomeViewModel {
 
         isLoading = true
         error = nil
+        defer { isLoading = false }
 
-        try? await Task.sleep(for: .milliseconds(500))
-
-        loadMockData()
-        hasLoadedInitialData = true
-
-        isLoading = false
+        do {
+            let payload = try await repository.fetchHomePayload()
+            featuredMovie = payload.featuredMovie
+            continueWatching = payload.continueWatching
+            trendingMovies = payload.trendingMovies
+            newReleases = payload.newReleases
+            hasLoadedInitialData = true
+        } catch is CancellationError {
+            hasLoadedInitialData = false
+        } catch {
+            self.error = HomeLoadError.map(error)
+            hasLoadedInitialData = false
+        }
     }
 
     // MARK: - Intents
@@ -62,14 +75,5 @@ final class HomeViewModel {
 
     func didTapMovie(_ movie: Movie) {
         print("Movie tapped: \(movie.title)")
-    }
-
-    private func loadMockData() {
-        #if DEBUG
-        featuredMovie = .mockMario
-        continueWatching = ContinueWatchingItem.mockArray
-        trendingMovies = Movie.mockArray
-        newReleases = Array(Movie.mockArray.reversed())
-        #endif
     }
 }
