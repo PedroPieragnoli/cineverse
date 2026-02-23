@@ -7,11 +7,10 @@ import Foundation
 import Testing
 @testable import Cineverse
 
-@Suite(.serialized)
 struct TMDBHomeRemoteDataSourceTests {
     @Test("Trending request uses expected path, method, auth and locale")
-    func fetchTrendingBuildsExpectedRequest() async throws {
-        let client = HTTPClientSpy()
+    func trendingRequestUsesPathMethodAuthAndLocale() async throws {
+        let (dataSource, client) = makeSUT(language: "pt", region: "BR")
         client.responseDataByPath["/trending/movie/week"] = encode(
             MovieResponse(
                 page: 1,
@@ -19,17 +18,6 @@ struct TMDBHomeRemoteDataSourceTests {
                 totalPages: 1,
                 totalResults: 1
             )
-        )
-
-        let environment = TMDBEnvironment(
-            baseURL: URL(string: "https://api.themoviedb.org/3")!,
-            readAccessToken: "token-123",
-            language: "pt",
-            region: "BR"
-        )
-        let dataSource = TMDBHomeRemoteDataSource(
-            httpClient: client,
-            requestBuilder: TMDBRequestBuilder(environment: environment)
         )
 
         let response = try await dataSource.fetchTrending()
@@ -45,9 +33,9 @@ struct TMDBHomeRemoteDataSourceTests {
         #expect(!request.queryItems.contains { $0.name == "api_key" })
     }
 
-    @Test("Upcoming request targets the /movie/upcoming endpoint")
-    func fetchUpcomingUsesUpcomingEndpoint() async throws {
-        let client = HTTPClientSpy()
+    @Test("Upcoming request uses path, method, auth and locale")
+    func upcomingRequestUsesPathMethodAuthAndLocale() async throws {
+        let (dataSource, client) = makeSUT()
         client.responseDataByPath["/movie/upcoming"] = encode(
             MovieResponse(
                 page: 1,
@@ -57,28 +45,22 @@ struct TMDBHomeRemoteDataSourceTests {
             )
         )
 
-        let environment = TMDBEnvironment(
-            baseURL: URL(string: "https://api.themoviedb.org/3")!,
-            readAccessToken: "token-123",
-            language: "en",
-            region: "US"
-        )
-        let dataSource = TMDBHomeRemoteDataSource(
-            httpClient: client,
-            requestBuilder: TMDBRequestBuilder(environment: environment)
-        )
-
         let response = try await dataSource.fetchUpcoming()
         let request = try #require(client.capturedRequests.first)
 
         #expect(response.results.first?.id == 202)
         #expect(request.method == .get)
         #expect(request.path == "/movie/upcoming")
+        #expect(request.headers["Authorization"] == "Bearer token-123")
+        #expect(request.headers["Accept"] == "application/json")
+        #expect(request.queryItems.contains { $0.name == "language" && $0.value == "en" })
+        #expect(request.queryItems.contains { $0.name == "region" && $0.value == "US" })
+        #expect(!request.queryItems.contains { $0.name == "api_key" })
     }
 
-    @Test("Genres request targets the /genre/movie/list endpoint")
-    func fetchGenresUsesGenresEndpoint() async throws {
-        let client = HTTPClientSpy()
+    @Test("Genres request uses path, method, auth and locale")
+    func genresRequestUsesPathMethodAuthAndLocale() async throws {
+        let (dataSource, client) = makeSUT()
         client.responseDataByPath["/genre/movie/list"] = encode(
             GenreResponse(
                 genres: [
@@ -88,64 +70,56 @@ struct TMDBHomeRemoteDataSourceTests {
             )
         )
 
-        let environment = TMDBEnvironment(
-            baseURL: URL(string: "https://api.themoviedb.org/3")!,
-            readAccessToken: "token-123",
-            language: "en",
-            region: "US"
-        )
-        let dataSource = TMDBHomeRemoteDataSource(
-            httpClient: client,
-            requestBuilder: TMDBRequestBuilder(environment: environment)
-        )
-
         let response = try await dataSource.fetchGenres()
         let request = try #require(client.capturedRequests.first)
 
         #expect(response.genres.count == 2)
         #expect(request.method == .get)
         #expect(request.path == "/genre/movie/list")
-    }
-}
-
-private final class HTTPClientSpy: HTTPClient {
-    struct CapturedRequest {
-        let method: HTTPMethod
-        let path: String
-        let queryItems: [URLQueryItem]
-        let headers: [String: String]
+        #expect(request.headers["Authorization"] == "Bearer token-123")
+        #expect(request.headers["Accept"] == "application/json")
+        #expect(request.queryItems.contains { $0.name == "language" && $0.value == "en" })
+        #expect(request.queryItems.contains { $0.name == "region" && $0.value == "US" })
+        #expect(!request.queryItems.contains { $0.name == "api_key" })
     }
 
-    var capturedRequests: [CapturedRequest] = []
-    var responseDataByPath: [String: Data] = [:]
-    var errorByPath: [String: Error] = [:]
+    @Test("Trending surfaces transport errors")
+    func trendingSurfacesTransportError() async {
+        let (dataSource, client) = makeSUT()
+        client.errorByPath["/trending/movie/week"] = TMDBNetworkingError.network
 
-    func send<Response: Decodable>(_ request: APIRequest<Response>) async throws -> Response {
-        capturedRequests.append(
-            CapturedRequest(
-                method: request.method,
-                path: request.path,
-                queryItems: request.queryItems,
-                headers: request.headers
-            )
-        )
-
-        if let error = errorByPath[request.path] {
-            throw error
+        await #expect(throws: TMDBNetworkingError.network) {
+            _ = try await dataSource.fetchTrending()
         }
-
-        let data = try #require(
-            responseDataByPath[request.path],
-            "Expected stub response for path \(request.path)"
-        )
-
-        return try request.decoder.decode(Response.self, from: data)
     }
-}
 
-private func encode<T: Encodable>(_ value: T) -> Data {
-    let encoder = JSONEncoder()
-    return (try? encoder.encode(value)) ?? Data()
+    @Test("Trending throws missing token when access token is empty")
+    func trendingThrowsMissingTokenWhenTokenIsEmpty() async {
+        let (dataSource, _) = makeSUT(token: "")
+
+        await #expect(throws: TMDBNetworkingError.missingTMDBToken) {
+            _ = try await dataSource.fetchTrending()
+        }
+    }
+
+    private func makeSUT(
+        language: String = "en",
+        region: String = "US",
+        token: String = "token-123"
+    ) -> (TMDBHomeRemoteDataSource, HTTPClientSpy) {
+        let environment = TMDBEnvironment(
+            baseURL: URL(string: "https://api.themoviedb.org/3")!,
+            readAccessToken: token,
+            language: language,
+            region: region
+        )
+        let client = HTTPClientSpy()
+        let dataSource = TMDBHomeRemoteDataSource(
+            httpClient: client,
+            requestBuilder: TMDBRequestBuilder(environment: environment)
+        )
+        return (dataSource, client)
+    }
 }
 
 private func makeMovie(
