@@ -31,7 +31,8 @@ struct HeroLayoutMetricsTests {
     @Test("Pull-down increases scale and adds compensation")
     func pullDownIncreasesScale() {
         let metrics = HeroLayoutMetrics(minY: 120, containerHeight: 600)
-        let expectedBaseHeight = 600 - (600 * DesignSystem.Layout.heroBottomGapRatio) + 28
+        let bottomGapRatio: CGFloat = 0.10
+        let expectedBaseHeight = 600 - (600 * bottomGapRatio) + 28
         let expectedScale = 1 + (120 / max(expectedBaseHeight, 1))
 
         #expect(metrics.rawPullDown == 120)
@@ -44,7 +45,8 @@ struct HeroLayoutMetricsTests {
     func baseImageHeightFormula() {
         let containerHeight: CGFloat = 500
         let metrics = HeroLayoutMetrics(minY: 0, containerHeight: containerHeight)
-        let expected = containerHeight - (containerHeight * DesignSystem.Layout.heroBottomGapRatio) + 28
+        let bottomGapRatio: CGFloat = 0.10
+        let expected = containerHeight - (containerHeight * bottomGapRatio) + 28
 
         #expect(abs(metrics.baseImageHeight - expected) < 0.0001)
     }
