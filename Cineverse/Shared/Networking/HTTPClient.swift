@@ -5,6 +5,6 @@
 
 import Foundation
 
-protocol HTTPClient {
+protocol HTTPClient: Sendable {
     func send<Response: Decodable>(_ request: APIRequest<Response>) async throws -> Response
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-final class URLSessionHTTPClient: HTTPClient {
+final class URLSessionHTTPClient: HTTPClient, Sendable {
     private let baseURL: URL
     private let session: URLSession
 
