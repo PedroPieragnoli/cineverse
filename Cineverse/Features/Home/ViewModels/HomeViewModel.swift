@@ -10,12 +10,12 @@ import Foundation
 final class HomeViewModel {
     private let repository: HomeRepository
 
-    var featuredMovie: FeaturedMovie?
-    var continueWatching: [ContinueWatchingItem] = []
-    var trendingMovies: [Movie] = []
-    var newReleases: [Movie] = []
-    var isLoading = false
-    var error: Error?
+    private(set) var featuredMovie: FeaturedMovie?
+    private(set) var continueWatching: [ContinueWatchingItem] = []
+    private(set) var trendingMovies: [Movie] = []
+    private(set) var newReleases: [Movie] = []
+    private(set) var isLoading = false
+    private(set) var error: Error?
     private(set) var hasLoadedInitialData = false
 
     init(repository: HomeRepository = DefaultHomeRepository.live()) {
