@@ -17,25 +17,37 @@ enum DesignSystem {
         static let secondaryText = Color(hex: "#9CA3AF")
         static let metadataText = Color(hex: "#A1A1A1")
         static let heroDescriptionText = Color(hex: "#E5E7EB")
+        static let headerTint = Color(hex: "#0A0A0C")
+        static let bodyText = Color(hex: "#E0E0E0")
     }
 
     enum CornerRadius {
         static let card: CGFloat = 12
         static let button: CGFloat = 12
+        static let buttonLarge: CGFloat = 16
+        static let poster: CGFloat = 16
     }
 
     enum Opacity {
+        static let subtleFill: CGFloat = 0.05
         static let subtleBorder: CGFloat = 0.1
+        static let ring: CGFloat = 0.2
         static let disabled: CGFloat = 0.3
         static let loading: CGFloat = 0.6
     }
 
     enum Animation {
+        static let quick: TimeInterval = 0.25
         static let standard: TimeInterval = 0.3
+    }
+
+    enum IconSize {
+        static let placeholder: CGFloat = 26
     }
 
     enum Borders {
         static let standard: CGFloat = 1
+        static let thick: CGFloat = 2
     }
 
     enum Strings {
@@ -61,10 +73,14 @@ enum DesignSystem {
         static let sectionTitle: Font = .system(size: 16, weight: .bold)
         static let cardTitle: Font = .system(size: 14, weight: .semibold)
         static let caption: Font = .system(size: 10, weight: .regular)
+        static let captionBold: Font = .system(size: 11, weight: .bold)
         static let metadata: Font = .system(size: 14, weight: .medium)
         static let buttonTitle: Font = .system(size: 14, weight: .bold)
         static let appTitle: Font = .system(size: 20, weight: .bold)
         static let heroDescription: Font = .system(size: 12, weight: .medium)
+        static let detailSectionTitle: Font = .system(size: 18, weight: .bold)
+        static let bodyText: Font = .system(size: 14, weight: .regular)
+        static let detailCaption: Font = .system(size: 12, weight: .regular)
     }
 
     enum Layout {
