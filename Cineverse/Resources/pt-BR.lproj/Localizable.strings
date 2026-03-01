@@ -51,3 +51,39 @@
 
 /* Placeholder subtitle for tabs that are not implemented yet */
 "mainTab.placeholder.comingSoon" = "Em breve";
+
+/* Accessibility label for the detail header back button */
+"detail.header.backButton" = "Voltar";
+
+/* Accessibility label for the detail header favorite button */
+"detail.header.favoriteButton" = "Favorito";
+
+/* Accessibility value for favorite state enabled */
+"detail.favorite.state.on" = "Salvo";
+
+/* Accessibility value for favorite state disabled */
+"detail.favorite.state.off" = "Não salvo";
+
+/* Rating percentage with score label on detail metadata */
+"detail.metadata.scoreFormat" = "%lld%% Pontuação";
+
+/* Primary call to action title on detail screen */
+"detail.playButton.title" = "Assistir agora";
+
+/* Accessibility label for the detail play button */
+"detail.playButton.accessibilityLabel" = "Assistir agora";
+
+/* Synopsis section title on detail screen */
+"detail.synopsis.title" = "Sinopse";
+
+/* Expands the overview text on detail screen */
+"detail.synopsis.readMore" = "Ler mais";
+
+/* Collapses the overview text on detail screen */
+"detail.synopsis.showLess" = "Mostrar menos";
+
+/* Top cast section title on detail screen */
+"detail.cast.title" = "Elenco principal";
+
+/* Accessibility label for a cast member with name and character */
+"detail.cast.member.accessibilityLabel" = "%@, como %@";
