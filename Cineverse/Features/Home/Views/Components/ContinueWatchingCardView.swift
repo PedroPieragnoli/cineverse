@@ -42,7 +42,7 @@ struct ContinueWatchingCardView: View {
             cardContent
         }
         .buttonStyle(.plain)
-        .onChange(of: item.movie.backdropURL) { _ in
+        .onChange(of: item.movie.backdropURL) {
             loadFailed = false
         }
     }
