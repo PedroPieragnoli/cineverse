@@ -9,10 +9,18 @@ struct HomeView: View {
     // MARK: - Properties
 
     private let viewModel: HomeViewModel
+    private let hiddenTransitionSourceID: String?
+    private let onDetailRequested: (DetailRoute) -> Void
     @State private var scrollOffset: CGFloat = 0
 
-    init(viewModel: HomeViewModel) {
+    init(
+        viewModel: HomeViewModel,
+        hiddenTransitionSourceID: String? = nil,
+        onDetailRequested: @escaping (DetailRoute) -> Void = { _ in }
+    ) {
         self.viewModel = viewModel
+        self.hiddenTransitionSourceID = hiddenTransitionSourceID
+        self.onDetailRequested = onDetailRequested
     }
 
     var body: some View {
@@ -48,6 +56,7 @@ struct HomeView: View {
                 HomeMovieSectionsView(
                     sections: viewModel.sections,
                     safeAreaBottomInset: safeAreaBottomInset,
+                    hiddenTransitionSourceID: hiddenTransitionSourceID,
                     onContinueWatchingTapped: handleContinueWatchingTapped,
                     onMovieTapped: handleMovieTapped
                 )
@@ -79,6 +88,7 @@ struct HomeView: View {
 
     private func handleWatchTapped(_ featured: FeaturedMovie) {
         viewModel.didTapWatch(featured)
+        onDetailRequested(DetailRoute(movie: featured.movie, source: .hero))
     }
 
     private func handleMyListTapped(_ featured: FeaturedMovie) {
@@ -89,8 +99,17 @@ struct HomeView: View {
         viewModel.didTapContinueWatching(item)
     }
 
-    private func handleMovieTapped(_ movie: Movie) {
+    private func handleMovieTapped(_ movie: Movie, sourcePosterFrame: CGRect?, sourceTransitionID: String) {
         viewModel.didTapMovie(movie)
+        onDetailRequested(
+            DetailRoute(
+                movie: movie,
+                source: .posterCard,
+                sourcePosterFrame: sourcePosterFrame,
+                customTransitionSourceID: sourceTransitionID,
+                sourcePosterURL: movie.posterURL
+            )
+        )
     }
 }
 
@@ -98,12 +117,16 @@ struct HomeView: View {
 
 #if DEBUG
 #Preview("Home View") {
-    HomeView(viewModel: HomeViewModel(repository: PreviewHomeRepository()))
+    HomeView(
+        viewModel: HomeViewModel(repository: PreviewHomeRepository())
+    )
         .preferredColorScheme(.dark)
 }
 
 #Preview("Home View - Loading") {
-    HomeView(viewModel: HomeViewModel(repository: PreviewHomeRepository()))
+    HomeView(
+        viewModel: HomeViewModel(repository: PreviewHomeRepository())
+    )
         .preferredColorScheme(.dark)
 }
 #endif
