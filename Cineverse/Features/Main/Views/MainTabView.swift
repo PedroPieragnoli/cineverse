@@ -241,47 +241,48 @@ extension MainTabView {
     private func heroOverlayView(containerFrame: CGRect) -> some View {
         if let payload = heroAnimator.heroOverlayPayload {
             let shape = RoundedRectangle(cornerRadius: payload.currentCornerRadius, style: .continuous)
-            Group {
-                if let posterURL = payload.posterURL {
-                    if let cachedPoster = ImageCache.default.retrieveImageInMemoryCache(
-                        forKey: posterURL.cacheKey
-                    ) {
-                        Image(uiImage: cachedPoster)
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        KFImage(posterURL)
-                            .resizable()
-                            .scaledToFill()
-                    }
-                } else {
-                    Rectangle()
-                        .fill(DesignSystem.Colors.surface)
-                        .overlay {
-                            Image(systemName: DetailHeroAnimator.Layout.heroPlaceholderSymbol)
-                                .font(.system(size: DesignSystem.IconSize.placeholder, weight: .medium))
-                                .foregroundStyle(.white.opacity(DesignSystem.Opacity.disabled))
-                        }
-                }
-            }
-            .frame(
-                width: payload.currentFrame.width,
-                height: payload.currentFrame.height
-            )
-            .clipShape(shape)
-            .overlay {
-                shape.strokeBorder(
-                    .white.opacity(DesignSystem.Opacity.subtleBorder),
-                    lineWidth: DesignSystem.Borders.standard
+            heroOverlayContent(posterURL: payload.posterURL)
+                .frame(
+                    width: payload.currentFrame.width,
+                    height: payload.currentFrame.height
                 )
+                .clipShape(shape)
+                .overlay {
+                    shape.strokeBorder(
+                        .white.opacity(DesignSystem.Opacity.subtleBorder),
+                        lineWidth: DesignSystem.Borders.standard
+                    )
+                }
+                .position(
+                    x: payload.currentFrame.midX - containerFrame.minX,
+                    y: payload.currentFrame.midY - containerFrame.minY
+                )
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+                .zIndex(10)
+        }
+    }
+
+    @ViewBuilder
+    private func heroOverlayContent(posterURL: URL?) -> some View {
+        if let posterURL {
+            if let cachedPoster = ImageCache.default.retrieveImageInMemoryCache(forKey: posterURL.cacheKey) {
+                Image(uiImage: cachedPoster)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                KFImage(posterURL)
+                    .resizable()
+                    .scaledToFill()
             }
-            .position(
-                x: payload.currentFrame.midX - containerFrame.minX,
-                y: payload.currentFrame.midY - containerFrame.minY
-            )
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
-            .zIndex(10)
+        } else {
+            Rectangle()
+                .fill(DesignSystem.Colors.surface)
+                .overlay {
+                    Image(systemName: "film")
+                        .font(.system(size: DesignSystem.IconSize.placeholder, weight: .medium))
+                        .foregroundStyle(.white.opacity(DesignSystem.Opacity.disabled))
+                }
         }
     }
 }
