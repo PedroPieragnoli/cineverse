@@ -97,6 +97,7 @@ struct HomeViewModelTests {
     }
 }
 
+@MainActor
 private final class HomeRepositorySpy: HomeRepository {
     private(set) var fetchCallCount = 0
     private let result: Result<HomePayload, Error>
