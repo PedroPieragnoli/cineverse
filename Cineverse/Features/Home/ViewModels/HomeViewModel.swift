@@ -52,10 +52,9 @@ final class HomeViewModel {
             newReleases = payload.newReleases
             hasLoadedInitialData = true
         } catch is CancellationError {
-            hasLoadedInitialData = false
+            // CancellationError isn't user-facing
         } catch {
             self.error = HomeLoadError.map(error)
-            hasLoadedInitialData = false
         }
     }
 
