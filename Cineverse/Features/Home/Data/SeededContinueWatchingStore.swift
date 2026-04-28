@@ -8,19 +8,11 @@ import Foundation
 struct SeededContinueWatchingStore: ContinueWatchingStore {
     private let seedItems: [ContinueWatchingItem]
 
-    init(seedItems: [ContinueWatchingItem] = Self.defaultSeedItems()) {
+    init(seedItems: [ContinueWatchingItem] = []) {
         self.seedItems = seedItems
     }
 
     func loadItems() async throws -> [ContinueWatchingItem] {
         seedItems
-    }
-
-    private static func defaultSeedItems() -> [ContinueWatchingItem] {
-        #if DEBUG
-        ContinueWatchingItem.mockArray
-        #else
-        []
-        #endif
     }
 }

@@ -10,17 +10,12 @@ struct MainTabView: View {
     @State private var heroAnimator = DetailHeroAnimator()
 
     @MainActor
-    init(initialTab: TabItem = .home) {
+    init(
+        initialTab: TabItem = .home,
+        repository: HomeRepository = DefaultHomeRepository.live()
+    ) {
         _selectedTab = State(initialValue: initialTab)
-        #if DEBUG
-        _homeViewModel = State(
-            initialValue: HomeViewModel(repository: PreviewHomeRepository())
-        )
-        #else
-        _homeViewModel = State(
-            initialValue: HomeViewModel(repository: DefaultHomeRepository.live())
-        )
-        #endif
+        _homeViewModel = State(initialValue: HomeViewModel(repository: repository))
     }
 
     var body: some View {
@@ -289,12 +284,12 @@ extension MainTabView {
 
 #if DEBUG
 #Preview("Main Tab View") {
-    MainTabView()
+    MainTabView(repository: PreviewHomeRepository())
         .preferredColorScheme(.dark)
 }
 
 #Preview("Main Tab View - Search") {
-    MainTabView(initialTab: .search)
+    MainTabView(initialTab: .search, repository: PreviewHomeRepository())
         .preferredColorScheme(.dark)
 }
 #endif

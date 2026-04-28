@@ -33,16 +33,12 @@ struct SeededContinueWatchingStoreTests {
         #expect(loaded[1].remainingSeconds == 420)
     }
 
-    @Test("Default store returns a valid non-throwing array")
-    func defaultStoreReturnsArray() async throws {
+    @Test("Default store returns an empty array")
+    func defaultStoreReturnsEmpty() async throws {
         let store = SeededContinueWatchingStore()
         let loaded = try await store.loadItems()
 
-        #if DEBUG
-        #expect(!loaded.isEmpty)
-        #else
         #expect(loaded.isEmpty)
-        #endif
     }
 }
 
