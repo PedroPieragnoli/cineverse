@@ -33,9 +33,9 @@ struct Movie: Codable, Identifiable, Hashable {
         return TMDBConfiguration.backdropURL(for: backdropPath, size: .original)
     }
 
-    var releaseYear: String {
+    var releaseYear: String? {
         guard let releaseDate, let date = MovieDateFormatter.parse(releaseDate) else {
-            return ""
+            return nil
         }
         return MovieDateFormatter.releaseYear(from: date)
     }

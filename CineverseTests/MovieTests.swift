@@ -30,16 +30,16 @@ struct MovieTests {
         #expect(movie.releaseYear == "2025")
     }
 
-    @Test("releaseYear returns empty string for invalid TMDB date")
+    @Test("releaseYear returns nil for invalid TMDB date")
     func releaseYearWithInvalidDate() {
         let movie = Self.makeMovie(releaseDate: "invalid-date")
-        #expect(movie.releaseYear.isEmpty)
+        #expect(movie.releaseYear == nil)
     }
 
-    @Test("releaseYear and formattedReleaseDate return empty strings when releaseDate is nil")
+    @Test("releaseYear is nil and formattedReleaseDate is empty when releaseDate is nil")
     func releaseDateWithNilValue() {
         let movie = Self.makeMovie(releaseDate: nil)
-        #expect(movie.releaseYear.isEmpty)
+        #expect(movie.releaseYear == nil)
         #expect(movie.formattedReleaseDate.isEmpty)
     }
 

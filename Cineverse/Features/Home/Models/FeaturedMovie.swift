@@ -31,7 +31,7 @@ struct FeaturedMovie: Identifiable, Hashable {
     var accessibilityMetadataText: String { formattedMetadata(separator: Constants.accessibilitySeparator) }
 
     private func formattedMetadata(separator: String) -> String {
-        [movie.releaseYear, formattedGenres(separator: separator)]
+        [movie.releaseYear ?? "", formattedGenres(separator: separator)]
             .filter { !$0.isEmpty }
             .joined(separator: separator)
     }
