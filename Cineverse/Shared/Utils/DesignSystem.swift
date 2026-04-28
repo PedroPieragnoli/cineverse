@@ -16,7 +16,6 @@ enum DesignSystem {
         static let buttonSecondaryBorder = Color.white.opacity(0.2)
         static let secondaryText = Color(hex: "#9CA3AF")
         static let metadataText = Color(hex: "#A1A1A1")
-        static let heroDescriptionText = Color(hex: "#E5E7EB")
         static let headerTint = Color(hex: "#0A0A0C")
         static let bodyText = Color(hex: "#E0E0E0")
     }
@@ -77,7 +76,6 @@ enum DesignSystem {
         static let metadata: Font = .system(size: 14, weight: .medium)
         static let buttonTitle: Font = .system(size: 14, weight: .bold)
         static let appTitle: Font = .system(size: 20, weight: .bold)
-        static let heroDescription: Font = .system(size: 12, weight: .medium)
         static let detailSectionTitle: Font = .system(size: 18, weight: .bold)
         static let bodyText: Font = .system(size: 14, weight: .regular)
         static let detailCaption: Font = .system(size: 12, weight: .regular)
@@ -86,8 +84,6 @@ enum DesignSystem {
     enum Layout {
         static let horizontalPadding: CGFloat = 20
         static let heroHeightRatio: CGFloat = 0.8
-        static let heroBottomGapRatio: CGFloat = 0.10
-        static let continueWatchingCardWidth: CGFloat = 240
         static let tabBarHeight: CGFloat = 64
         static let buttonHeight: CGFloat = 44
         static let profileAvatarSize: CGFloat = 40

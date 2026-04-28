@@ -9,6 +9,7 @@ struct HeroLayoutMetrics {
     private enum Layout {
         static let imageLift: CGFloat = 28
         static let parallaxFactorUp: CGFloat = 0.35
+        static let bottomGapRatio: CGFloat = 0.10
     }
 
     let rawPullDown: CGFloat
@@ -27,7 +28,7 @@ struct HeroLayoutMetrics {
         let scrollUp = max(0, -minY)
         let rawPullDown = max(0, minY)
         let parallaxOffsetY = scrollUp * Layout.parallaxFactorUp
-        let bottomGap = containerHeight * DesignSystem.Layout.heroBottomGapRatio
+        let bottomGap = containerHeight * Layout.bottomGapRatio
         let baseImageHeight = containerHeight - bottomGap + Layout.imageLift
         let pullDownScale = 1 + (rawPullDown / max(baseImageHeight, 1))
 

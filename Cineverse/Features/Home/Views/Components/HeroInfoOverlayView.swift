@@ -13,6 +13,8 @@ struct HeroInfoOverlayView: View {
         static let contentBottomPadding: CGFloat = 40
         static let movieInfoTopSpacing: CGFloat = 100
         static let movieInfoGradientHeightRatio: CGFloat = 0.58
+        static let descriptionFont: Font = .system(size: 12, weight: .medium)
+        static let descriptionTextColor: Color = Color(hex: "#E5E7EB")
     }
 
     let featuredMovie: FeaturedMovie
@@ -78,8 +80,8 @@ struct HeroInfoOverlayView: View {
 
     private func descriptionText(contentWidth: CGFloat) -> some View {
         Text(featuredMovie.movie.overview)
-            .font(DesignSystem.Typography.heroDescription)
-            .foregroundStyle(DesignSystem.Colors.heroDescriptionText)
+            .font(Layout.descriptionFont)
+            .foregroundStyle(Layout.descriptionTextColor)
             .lineLimit(Layout.descriptionLineLimit)
             .frame(maxWidth: contentWidth * Layout.maxTitleWidth, alignment: .leading)
             .shadow(color: .black.opacity(0.5), radius: 4)
