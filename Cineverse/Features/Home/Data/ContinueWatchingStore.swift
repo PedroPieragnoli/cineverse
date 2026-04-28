@@ -5,6 +5,6 @@
 
 import Foundation
 
-protocol ContinueWatchingStore {
+protocol ContinueWatchingStore: Sendable {
     func loadItems() async throws -> [ContinueWatchingItem]
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct TMDBEnvironment: Sendable {
+struct TMDBEnvironment {
     private static let defaultBaseURLString = "https://api.themoviedb.org/3"
     private static let defaultBaseURL: URL = {
         guard let url = URL(string: defaultBaseURLString) else {

@@ -5,6 +5,6 @@
 
 import Foundation
 
-protocol HomeRepository {
+protocol HomeRepository: Sendable {
     func fetchHomePayload() async throws -> HomePayload
 }

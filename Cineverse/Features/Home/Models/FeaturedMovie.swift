@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct FeaturedMovie: Identifiable, Hashable, Sendable {
+struct FeaturedMovie: Identifiable, Hashable {
     private enum Constants {
         static let maxDisplayedGenres = 2
         static let displaySeparator = " • "
