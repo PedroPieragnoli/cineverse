@@ -6,15 +6,11 @@
 import SwiftUI
 
 struct HomeHeaderView: View {
-    // MARK: - Layout Constants
-
     private enum Layout {
         static let bottomPadding: CGFloat = 8
         static let profileRingOpacity: CGFloat = 0.1
         static let personIconOffset: CGFloat = 4
     }
-
-    // MARK: - Properties
 
     var backgroundOpacity: Double = 0
     var onProfileTapped: (() -> Void)?

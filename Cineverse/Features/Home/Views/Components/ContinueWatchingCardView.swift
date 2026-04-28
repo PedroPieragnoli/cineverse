@@ -7,8 +7,6 @@ import Kingfisher
 import SwiftUI
 
 struct ContinueWatchingCardView: View {
-    // MARK: - Layout Constants
-
     private enum Layout {
         static let defaultWidth: CGFloat = 240
         static let aspectRatio: CGFloat = 16 / 9
@@ -20,8 +18,6 @@ struct ContinueWatchingCardView: View {
         static let fallbackIconWidthRatio: CGFloat = 0.15
         static let metadataHorizontalPadding: CGFloat = 2
     }
-
-    // MARK: - Properties
 
     let item: ContinueWatchingItem
     let width: CGFloat

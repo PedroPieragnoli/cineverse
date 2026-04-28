@@ -2,8 +2,6 @@ import Kingfisher
 import SwiftUI
 
 struct MainTabView: View {
-    // MARK: - Properties
-
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var selectedTab: TabItem

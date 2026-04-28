@@ -6,11 +6,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    // MARK: - Properties
-
     private let viewModel: HomeViewModel
     private let hiddenTransitionSourceID: String?
     private let onDetailRequested: (DetailRoute) -> Void
+
     @State private var scrollOffset: CGFloat = 0
 
     init(
@@ -36,8 +35,6 @@ struct HomeView: View {
             }
         }
     }
-
-    // MARK: - Computed Properties
 
     private var headerOpacity: Double {
         min(0.9, max(0, scrollOffset / 200))
