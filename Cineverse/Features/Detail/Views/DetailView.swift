@@ -130,7 +130,6 @@ struct DetailView: View {
             isScrolledToTop: isScrollAtTop,
             isScrolledToBottom: isAtBottom,
             in: containerSize,
-            reduceMotion: reduceMotion,
             onStateChange: handleSwipeDismissStateChange
         ) {
             requestClose(transition: nil)

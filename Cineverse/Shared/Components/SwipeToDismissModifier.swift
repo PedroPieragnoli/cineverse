@@ -31,10 +31,10 @@ struct SwipeToDismissModifier: ViewModifier {
     let isScrolledToTop: Bool
     let isScrolledToBottom: Bool
     let containerSize: CGSize
-    let reduceMotion: Bool
     let onStateChange: (SwipeDismissState) -> Void
     let onDismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dragOffset: CGSize = .zero
     @State private var lockedAxis: LockedAxis?
     @State private var startedFromEdge = false
@@ -305,7 +305,6 @@ extension View {
         isScrolledToTop: Bool,
         isScrolledToBottom: Bool,
         in containerSize: CGSize,
-        reduceMotion: Bool,
         onStateChange: @escaping (SwipeDismissState) -> Void,
         onDismiss: @escaping () -> Void
     ) -> some View {
@@ -314,7 +313,6 @@ extension View {
                 isScrolledToTop: isScrolledToTop,
                 isScrolledToBottom: isScrolledToBottom,
                 containerSize: containerSize,
-                reduceMotion: reduceMotion,
                 onStateChange: onStateChange,
                 onDismiss: onDismiss
             )
