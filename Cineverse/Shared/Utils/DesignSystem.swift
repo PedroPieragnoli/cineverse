@@ -18,6 +18,7 @@ enum DesignSystem {
         static let metadataText = Color(hex: "#A1A1A1")
         static let headerTint = Color(hex: "#0A0A0C")
         static let bodyText = Color(hex: "#E0E0E0")
+        static let placeholderText = Color(hex: "#8E8E93")
     }
 
     enum CornerRadius {
@@ -29,6 +30,7 @@ enum DesignSystem {
 
     enum Opacity {
         static let subtleFill: CGFloat = 0.05
+        static let subtleBackground: CGFloat = 0.08
         static let subtleBorder: CGFloat = 0.1
         static let ring: CGFloat = 0.2
         static let disabled: CGFloat = 0.3
@@ -71,6 +73,7 @@ enum DesignSystem {
         static let heroTitle: Font = .system(size: 36, weight: .heavy)
         static let sectionTitle: Font = .system(size: 16, weight: .bold)
         static let cardTitle: Font = .system(size: 14, weight: .semibold)
+        static let genreCardTitle: Font = .system(size: 15, weight: .semibold)
         static let caption: Font = .system(size: 10, weight: .regular)
         static let captionBold: Font = .system(size: 11, weight: .bold)
         static let metadata: Font = .system(size: 14, weight: .medium)
@@ -79,6 +82,7 @@ enum DesignSystem {
         static let detailSectionTitle: Font = .system(size: 18, weight: .bold)
         static let bodyText: Font = .system(size: 14, weight: .regular)
         static let detailCaption: Font = .system(size: 12, weight: .regular)
+        static let body: Font = .system(size: 16, weight: .regular)
     }
 
     enum Layout {
@@ -89,5 +93,7 @@ enum DesignSystem {
         static let profileAvatarSize: CGFloat = 40
         static let logoIconSize: CGFloat = 28
         static let placeholderIconSize: CGFloat = 60
+        static let inputHeight: CGFloat = 52
+        static let iconSizeMd: CGFloat = 20
     }
 }

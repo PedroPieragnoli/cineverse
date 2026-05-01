@@ -87,3 +87,9 @@
 
 /* Accessibility label for a cast member with name and character */
 "detail.cast.member.accessibilityLabel" = "%@, as %@";
+
+/* Placeholder text in the search bar */
+"search.bar.placeholder" = "Search movies, actors, genres…";
+
+/* Section title for browse by genre grid */
+"search.browseByGenre.title" = "Browse by Genre";

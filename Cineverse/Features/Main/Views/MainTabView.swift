@@ -55,7 +55,9 @@ struct MainTabView: View {
         switch tab {
         case .home:
             homeTabRoot
-        case .search, .comingSoon, .myList:
+        case .search:
+            SearchView()
+        case .comingSoon, .myList:
             NavigationStack {
                 placeholderView(for: tab)
             }
