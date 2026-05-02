@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    private let genreItems = GenreGradientMapper.map(SearchGenreMocks.all)
+    let viewModel: SearchViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -14,21 +14,28 @@ struct SearchView: View {
             genreScrollContent
         }
         .background(DesignSystem.Colors.background.ignoresSafeArea())
+        .task {
+            await viewModel.loadGenres()
+        }
     }
 
     // MARK: - Subviews
 
     private var searchBar: some View {
-        SearchBarView()
-            .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
-            .padding(.top, DesignSystem.Spacing.sm)
+        SearchBarView(
+            text: Bindable(viewModel).searchQuery
+        ) {
+            viewModel.clearSearch()
+        }
+        .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
+        .padding(.top, DesignSystem.Spacing.sm)
     }
 
     private var genreScrollContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                 sectionTitle
-                GenreGridView(items: genreItems)
+                GenreGridView(items: viewModel.genreItems)
             }
             .padding(.top, DesignSystem.Spacing.lg)
         }
@@ -47,7 +54,7 @@ struct SearchView: View {
 
 #if DEBUG
 #Preview("Search - Idle") {
-    SearchView()
+    SearchView(viewModel: SearchViewModel(repository: PreviewSearchRepository()))
         .preferredColorScheme(.dark)
 }
 #endif

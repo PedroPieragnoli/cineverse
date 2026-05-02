@@ -33,6 +33,8 @@ enum DesignSystem {
         static let subtleBackground: CGFloat = 0.08
         static let subtleBorder: CGFloat = 0.1
         static let ring: CGFloat = 0.2
+        static let focusedBackground: CGFloat = 0.10
+        static let focusedBorder: CGFloat = 0.4
         static let disabled: CGFloat = 0.3
         static let loading: CGFloat = 0.6
     }

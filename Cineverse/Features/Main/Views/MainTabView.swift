@@ -6,16 +6,19 @@ struct MainTabView: View {
 
     @State private var selectedTab: TabItem
     @State private var homeViewModel: HomeViewModel
+    @State private var searchViewModel: SearchViewModel
     @State private var detailCoordinator = DetailHeroCoordinator()
     @State private var heroAnimator = DetailHeroAnimator()
 
     @MainActor
     init(
         initialTab: TabItem = .home,
-        repository: HomeRepository = DefaultHomeRepository.live()
+        repository: HomeRepository = DefaultHomeRepository.live(),
+        searchRepository: SearchRepository = DefaultSearchRepository.live()
     ) {
         _selectedTab = State(initialValue: initialTab)
         _homeViewModel = State(initialValue: HomeViewModel(repository: repository))
+        _searchViewModel = State(initialValue: SearchViewModel(repository: searchRepository))
     }
 
     var body: some View {
@@ -56,7 +59,7 @@ struct MainTabView: View {
         case .home:
             homeTabRoot
         case .search:
-            SearchView()
+            SearchView(viewModel: searchViewModel)
         case .comingSoon, .myList:
             NavigationStack {
                 placeholderView(for: tab)
@@ -286,12 +289,18 @@ extension MainTabView {
 
 #if DEBUG
 #Preview("Main Tab View") {
-    MainTabView(repository: PreviewHomeRepository())
-        .preferredColorScheme(.dark)
+    MainTabView(
+        repository: PreviewHomeRepository(),
+        searchRepository: PreviewSearchRepository()
+    )
+    .preferredColorScheme(.dark)
 }
-
 #Preview("Main Tab View - Search") {
-    MainTabView(initialTab: .search, repository: PreviewHomeRepository())
-        .preferredColorScheme(.dark)
+    MainTabView(
+        initialTab: .search,
+        repository: PreviewHomeRepository(),
+        searchRepository: PreviewSearchRepository()
+    )
+    .preferredColorScheme(.dark)
 }
 #endif

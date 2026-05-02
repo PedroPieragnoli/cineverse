@@ -91,5 +91,8 @@
 /* Placeholder text in the search bar */
 "search.bar.placeholder" = "Search movies, actors, genres…";
 
+/* Cancel button title on search bar */
+"search.bar.cancel" = "Cancel";
+
 /* Section title for browse by genre grid */
 "search.browseByGenre.title" = "Browse by Genre";
