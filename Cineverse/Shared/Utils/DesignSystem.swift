@@ -19,9 +19,11 @@ enum DesignSystem {
         static let headerTint = Color(hex: "#0A0A0C")
         static let bodyText = Color(hex: "#E0E0E0")
         static let placeholderText = Color(hex: "#8E8E93")
+        static let posterPlaceholder = Color(hex: "#1C1C1E")
     }
 
     enum CornerRadius {
+        static let small: CGFloat = 6
         static let card: CGFloat = 12
         static let button: CGFloat = 12
         static let buttonLarge: CGFloat = 16
@@ -36,6 +38,7 @@ enum DesignSystem {
         static let focusedBackground: CGFloat = 0.10
         static let focusedBorder: CGFloat = 0.4
         static let disabled: CGFloat = 0.3
+        static let divider: CGFloat = 0.05
         static let loading: CGFloat = 0.6
     }
 
@@ -85,6 +88,9 @@ enum DesignSystem {
         static let bodyText: Font = .system(size: 14, weight: .regular)
         static let detailCaption: Font = .system(size: 12, weight: .regular)
         static let body: Font = .system(size: 16, weight: .regular)
+        static let resultTitle: Font = .system(size: 16, weight: .semibold)
+        static let smallMetadata: Font = .system(size: 12, weight: .regular)
+        static let smallMetadataBold: Font = .system(size: 12, weight: .bold)
     }
 
     enum Layout {

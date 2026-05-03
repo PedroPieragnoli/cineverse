@@ -28,6 +28,11 @@ struct Movie: Codable, Identifiable, Hashable {
         return TMDBConfiguration.posterURL(for: posterPath, size: .large)
     }
 
+    var thumbnailPosterURL: URL? {
+        guard let posterPath else { return nil }
+        return TMDBConfiguration.posterURL(for: posterPath, size: .small)
+    }
+
     var backdropURL: URL? {
         guard let backdropPath else { return nil }
         return TMDBConfiguration.backdropURL(for: backdropPath, size: .original)
