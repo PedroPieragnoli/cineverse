@@ -20,11 +20,14 @@ enum DesignSystem {
         static let bodyText = Color(hex: "#E0E0E0")
         static let placeholderText = Color(hex: "#8E8E93")
         static let posterPlaceholder = Color(hex: "#1C1C1E")
+        static let shimmerLow = Color.white.opacity(0.04)
+        static let shimmerHigh = Color.white.opacity(0.08)
     }
 
     enum CornerRadius {
         static let small: CGFloat = 6
         static let card: CGFloat = 12
+        static let skeleton: CGFloat = 4
         static let button: CGFloat = 12
         static let buttonLarge: CGFloat = 16
         static let poster: CGFloat = 16
@@ -45,6 +48,7 @@ enum DesignSystem {
     enum Animation {
         static let quick: TimeInterval = 0.25
         static let standard: TimeInterval = 0.3
+        static let shimmerDuration: TimeInterval = 1.2
     }
 
     enum IconSize {
