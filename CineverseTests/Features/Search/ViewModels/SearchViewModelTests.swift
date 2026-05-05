@@ -137,6 +137,72 @@ struct SearchViewModelTests {
         #expect(viewModel.isSearching == false)
     }
 
+    // MARK: - Pagination Cap
+
+    @Test("loadNextPage stops at 5-page cap when API has more pages")
+    func paginationStopsAtCap() async {
+        let repository = SearchRepositorySpy()
+        repository.searchHandler = { _, page in
+            MovieResponse(page: page, results: [.mock], totalPages: 20, totalResults: 400)
+        }
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "test"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        for _ in 2...5 {
+            await viewModel.loadNextPage()
+        }
+
+        #expect(viewModel.currentPage == 5)
+        #expect(viewModel.canLoadMore == false)
+
+        let callsBefore = repository.searchCallCount
+        await viewModel.loadNextPage()
+        #expect(repository.searchCallCount == callsBefore)
+    }
+
+    @Test("loadNextPage stops when API totalPages reached before cap")
+    func paginationStopsAtApiTotal() async {
+        let repository = SearchRepositorySpy()
+        repository.searchHandler = { _, page in
+            MovieResponse(page: page, results: [.mock], totalPages: 3, totalResults: 60)
+        }
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "test"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        await viewModel.loadNextPage()
+        await viewModel.loadNextPage()
+
+        #expect(viewModel.currentPage == 3)
+        #expect(viewModel.canLoadMore == false)
+
+        let callsBefore = repository.searchCallCount
+        await viewModel.loadNextPage()
+        #expect(repository.searchCallCount == callsBefore)
+    }
+
+    @Test("loadNextPage stops when API totalPages equals cap")
+    func paginationStopsWhenApiEqualsMax() async {
+        let repository = SearchRepositorySpy()
+        repository.searchHandler = { _, page in
+            MovieResponse(page: page, results: [.mock], totalPages: 5, totalResults: 100)
+        }
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "test"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        for _ in 2...5 {
+            await viewModel.loadNextPage()
+        }
+
+        #expect(viewModel.currentPage == 5)
+        #expect(viewModel.canLoadMore == false)
+    }
+
     @Test("stale cancelled search cannot clear loading state for the latest request")
     func staleCancelledSearchDoesNotClearLoadingState() async {
         let repository = SearchRepositorySpy()

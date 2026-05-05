@@ -13,6 +13,7 @@ final class SearchViewModel {
 
     private enum Constants {
         static let debounceNanoseconds: UInt64 = 500_000_000
+        static let maxPages = 5
     }
 
     // MARK: - Genre State
@@ -40,6 +41,11 @@ final class SearchViewModel {
     private(set) var currentPage = 0
     private(set) var totalPages = 1
     private(set) var isPaginating = false
+
+    var canLoadMore: Bool {
+        !isPaginating && !isSearching && currentPage < totalPages
+            && currentPage < Constants.maxPages && hasSearchQuery
+    }
 
     init(repository: SearchRepository = DefaultSearchRepository.live()) {
         self.repository = repository
@@ -100,7 +106,7 @@ final class SearchViewModel {
     }
 
     func loadNextPage() async {
-        guard !isPaginating, !isSearching, currentPage < totalPages, hasSearchQuery else { return }
+        guard canLoadMore else { return }
 
         let searchID = activeSearchID
         let nextPage = currentPage + 1
