@@ -248,6 +248,127 @@ struct SearchViewModelTests {
         #expect(viewModel.canLoadMore == false)
     }
 
+    // MARK: - Search Error State
+
+    @Test("performSearch sets searchError on failure")
+    func performSearchSetsError() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.searchError == .network)
+        #expect(viewModel.searchResults.isEmpty)
+        #expect(viewModel.isSearching == false)
+    }
+
+    @Test("performSearch clears searchError on success")
+    func performSearchClearsError() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(viewModel.searchError == .network)
+
+        repository.searchResult = .success(.mock)
+        viewModel.searchQuery = "batman2"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.searchError == nil)
+        #expect(!viewModel.searchResults.isEmpty)
+    }
+
+    @Test("loadNextPage keeps results on error")
+    func loadNextPageKeepsResultsOnError() async {
+        let repository = SearchRepositorySpy()
+        var callCount = 0
+        repository.searchHandler = { _, page in
+            callCount += 1
+            if callCount == 1 {
+                return MovieResponse(page: 1, results: [.mock], totalPages: 5, totalResults: 100)
+            }
+            throw TMDBNetworkingError.network
+        }
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "test"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(!viewModel.searchResults.isEmpty)
+
+        await viewModel.loadNextPage()
+
+        #expect(viewModel.searchError == nil)
+        #expect(!viewModel.searchResults.isEmpty)
+    }
+
+    @Test("searchError is cleared when query changes")
+    func searchErrorClearedOnQueryChange() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(viewModel.searchError == .network)
+
+        viewModel.searchQuery = "bat"
+        #expect(viewModel.searchError == nil)
+    }
+
+    @Test("showsEmptyState is false when searchError is set")
+    func showsEmptyStateFalseWithError() {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+        viewModel.searchQuery = "batman"
+        viewModel.isSearching = false
+        viewModel.searchError = .network
+
+        #expect(viewModel.showsEmptyState == false)
+    }
+
+    @Test("retrySearch re-fires current query")
+    func retrySearchRefires() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(viewModel.searchError == .network)
+
+        repository.searchResult = .success(.mock)
+        viewModel.retrySearch()
+        try? await Task.sleep(nanoseconds: 200_000_000)
+
+        #expect(viewModel.searchError == nil)
+        #expect(!viewModel.searchResults.isEmpty)
+        #expect(viewModel.isSearching == false)
+    }
+
+    @Test("clearSearch clears searchError")
+    func clearSearchClearsError() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(viewModel.searchError == .network)
+
+        viewModel.clearSearch()
+        #expect(viewModel.searchError == nil)
+    }
+
+    // MARK: - Race Conditions
+
     @Test("stale cancelled search cannot clear loading state for the latest request")
     func staleCancelledSearchDoesNotClearLoadingState() async {
         let repository = SearchRepositorySpy()

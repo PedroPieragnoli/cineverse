@@ -43,6 +43,7 @@ enum DesignSystem {
         static let disabled: CGFloat = 0.3
         static let divider: CGFloat = 0.05
         static let loading: CGFloat = 0.6
+        static let errorIcon: CGFloat = 0.4
     }
 
     enum Animation {
@@ -95,6 +96,8 @@ enum DesignSystem {
         static let resultTitle: Font = .system(size: 16, weight: .semibold)
         static let smallMetadata: Font = .system(size: 12, weight: .regular)
         static let smallMetadataBold: Font = .system(size: 12, weight: .bold)
+        static let errorTitle: Font = .system(size: 17, weight: .semibold)
+        static let errorSubtitle: Font = .system(size: 13, weight: .regular)
     }
 
     enum Layout {
@@ -107,5 +110,6 @@ enum DesignSystem {
         static let placeholderIconSize: CGFloat = 60
         static let inputHeight: CGFloat = 52
         static let iconSizeMd: CGFloat = 20
+        static let errorIconSize: CGFloat = 72
     }
 }

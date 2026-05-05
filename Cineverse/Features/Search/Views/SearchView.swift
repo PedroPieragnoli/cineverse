@@ -85,6 +85,10 @@ struct SearchView: View {
             LazyVStack(spacing: 0) {
                 if viewModel.isSearching {
                     skeletonRows
+                } else if viewModel.searchError != nil {
+                    SearchErrorStateView {
+                        viewModel.retrySearch()
+                    }
                 } else if viewModel.showsEmptyState {
                     SearchEmptyStateView()
                 } else {
@@ -184,4 +188,14 @@ struct SearchView: View {
     return SearchView(viewModel: viewModel)
         .preferredColorScheme(.dark)
 }
+
+#Preview("Search - Error") {
+    let viewModel = SearchViewModel(repository: PreviewSearchRepository())
+    viewModel.searchQuery = "batman"
+    viewModel.isSearching = false
+    viewModel.searchError = .network
+    return SearchView(viewModel: viewModel)
+        .preferredColorScheme(.dark)
+}
+
 #endif

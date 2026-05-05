@@ -32,6 +32,7 @@ final class SearchViewModel {
         }
     }
     var isSearching = false
+    var searchError: SearchLoadError?
     private(set) var searchResults: [Movie] = []
     private var searchTask: Task<Void, Never>?
     private var activeSearchID = UUID()
@@ -90,7 +91,7 @@ final class SearchViewModel {
     }
 
     var showsEmptyState: Bool {
-        !isSearching && hasSearchQuery && searchResults.isEmpty
+        !isSearching && hasSearchQuery && searchResults.isEmpty && searchError == nil
     }
 
     private var trimmedQuery: String {
@@ -103,10 +104,24 @@ final class SearchViewModel {
         activeSearchID = UUID()
         searchQuery = ""
         searchResults = []
+        searchError = nil
         isSearching = false
         currentPage = 0
         totalPages = 1
         isPaginating = false
+    }
+
+    func retrySearch() {
+        guard hasSearchQuery else { return }
+        searchTask?.cancel()
+        searchError = nil
+        isSearching = true
+        currentPage = 0
+        totalPages = 1
+
+        let searchID = UUID()
+        activeSearchID = searchID
+        searchTask = Task { await performSearch(id: searchID, debounce: false) }
     }
 
     func loadNextPage() async {
@@ -126,7 +141,7 @@ final class SearchViewModel {
         } catch is CancellationError {
             // Swallow cancellation
         } catch {
-            // Error handling is delivery 5E
+            // Silently ignore — user already has results; scrolling will retry
         }
     }
 
@@ -143,6 +158,7 @@ final class SearchViewModel {
     private func onSearchQueryChanged() {
         searchTask?.cancel()
         isPaginating = false
+        searchError = nil
 
         guard !trimmedQuery.isEmpty else {
             activeSearchID = UUID()
@@ -161,21 +177,26 @@ final class SearchViewModel {
         searchTask = Task { await performSearch(id: searchID) }
     }
 
-    private func performSearch(id: UUID) async {
-        do {
-            try await Task.sleep(nanoseconds: Constants.debounceNanoseconds)
-        } catch { return }
+    private func performSearch(id: UUID, debounce: Bool = true) async {
+        if debounce {
+            do {
+                try await Task.sleep(nanoseconds: Constants.debounceNanoseconds)
+            } catch { return }
+        }
 
         guard !Task.isCancelled, activeSearchID == id else { return }
 
         do {
             let response = try await repository.searchMovies(query: trimmedQuery, page: 1)
             guard !Task.isCancelled, activeSearchID == id else { return }
+            searchError = nil
             applyResponse(response, replace: true)
         } catch is CancellationError {
             // Swallow cancellation
         } catch {
-            // Error state for search results is delivery 5
+            guard activeSearchID == id else { return }
+            searchError = SearchLoadError.map(error)
+            searchResults = []
         }
 
         guard activeSearchID == id else { return }

@@ -102,3 +102,12 @@
 
 /* Empty state subtitle when search returns no results */
 "search.emptyState.subtitle" = "Tente um termo de busca diferente";
+
+/* Error state title when search request fails */
+"search.errorState.title" = "Problema de conexão";
+
+/* Error state subtitle when search request fails */
+"search.errorState.subtitle" = "Verifique sua internet e tente novamente";
+
+/* Retry button title on search error state */
+"search.errorState.retryButton" = "Tentar novamente";
