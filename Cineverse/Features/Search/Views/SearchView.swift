@@ -87,6 +87,7 @@ struct SearchView: View {
                     skeletonRows
                 } else {
                     resultRows
+                    paginationSpinner
                 }
             }
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
@@ -116,6 +117,17 @@ struct SearchView: View {
                     Task { await viewModel.loadNextPage() }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var paginationSpinner: some View {
+        if viewModel.isPaginating {
+            ProgressView()
+                .tint(DesignSystem.Colors.primary)
+                .frame(height: DesignSystem.Spacing.xxl)
+                .frame(maxWidth: .infinity)
+                .padding(.top, DesignSystem.Spacing.lg)
         }
     }
 
