@@ -10,7 +10,29 @@ struct SearchView: View {
 
     private enum Layout {
         static let skeletonRowCount = 4
+        static let genreExitDuration: TimeInterval = 0.2
+        static let resultsEntryDuration: TimeInterval = 0.25
+        static let resultsEntryDelay: TimeInterval = 0.05
     }
+
+    // MARK: - Transitions
+
+    private static let genreExit: AnyTransition = .opacity
+        .combined(with: .offset(y: DesignSystem.Spacing.xs))
+        .animation(.easeOut(duration: Layout.genreExitDuration))
+
+    private static let genreEntry: AnyTransition = .opacity
+        .combined(with: .offset(y: DesignSystem.Spacing.xs))
+        .animation(.easeOut(duration: Layout.genreExitDuration))
+
+    private static let resultsEntry: AnyTransition = .opacity
+        .combined(with: .offset(y: DesignSystem.Spacing.sm))
+        .animation(.easeOut(duration: Layout.resultsEntryDuration)
+            .delay(Layout.resultsEntryDelay))
+
+    private static let resultsExit: AnyTransition = .opacity
+        .combined(with: .offset(y: DesignSystem.Spacing.sm))
+        .animation(.easeOut(duration: Layout.genreExitDuration))
 
     // MARK: - Properties
 
@@ -21,12 +43,25 @@ struct SearchView: View {
     var body: some View {
         VStack(spacing: 0) {
             searchBar
-            if viewModel.hasSearchQuery {
-                searchResultsContent
-            } else {
-                genreScrollContent
+            ZStack {
+                if viewModel.hasSearchQuery {
+                    searchResultsContent
+                        .zIndex(1)
+                        .transition(.asymmetric(
+                            insertion: Self.resultsEntry,
+                            removal: Self.resultsExit
+                        ))
+                } else {
+                    genreScrollContent
+                        .zIndex(0)
+                        .transition(.asymmetric(
+                            insertion: Self.genreEntry,
+                            removal: Self.genreExit
+                        ))
+                }
             }
         }
+        .animation(.easeOut(duration: Layout.resultsEntryDuration), value: viewModel.hasSearchQuery)
         .background(DesignSystem.Colors.background.ignoresSafeArea())
         .task {
             await viewModel.loadGenres()
