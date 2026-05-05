@@ -25,12 +25,21 @@ final class SearchViewModel {
     // MARK: - Search State
 
     var searchQuery = "" {
-        didSet { onSearchQueryChanged() }
+        didSet {
+            guard searchQuery != oldValue else { return }
+            onSearchQueryChanged()
+        }
     }
     var isSearching = false
     private(set) var searchResults: [Movie] = []
     private var searchTask: Task<Void, Never>?
     private var activeSearchID = UUID()
+
+    // MARK: - Pagination State
+
+    private(set) var currentPage = 0
+    private(set) var totalPages = 1
+    private(set) var isPaginating = false
 
     init(repository: SearchRepository = DefaultSearchRepository.live()) {
         self.repository = repository
@@ -71,7 +80,11 @@ final class SearchViewModel {
     }
 
     var hasSearchQuery: Bool {
-        !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
+        !trimmedQuery.isEmpty
+    }
+
+    private var trimmedQuery: String {
+        searchQuery.trimmingCharacters(in: .whitespaces)
     }
 
     func clearSearch() {
@@ -81,13 +94,47 @@ final class SearchViewModel {
         searchQuery = ""
         searchResults = []
         isSearching = false
+        currentPage = 0
+        totalPages = 1
+        isPaginating = false
+    }
+
+    func loadNextPage() async {
+        guard !isPaginating, !isSearching, currentPage < totalPages, hasSearchQuery else { return }
+
+        let searchID = activeSearchID
+        let nextPage = currentPage + 1
+        let query = trimmedQuery
+
+        isPaginating = true
+        defer { isPaginating = false }
+
+        do {
+            let response = try await repository.searchMovies(query: query, page: nextPage)
+            guard activeSearchID == searchID else { return }
+            applyResponse(response, replace: false)
+        } catch is CancellationError {
+            // Swallow cancellation
+        } catch {
+            // Error handling is delivery 5E
+        }
+    }
+
+    private func applyResponse(_ response: MovieResponse, replace: Bool) {
+        if replace {
+            searchResults = response.results
+        } else {
+            searchResults.append(contentsOf: response.results)
+        }
+        currentPage = response.page
+        totalPages = response.totalPages
     }
 
     private func onSearchQueryChanged() {
         searchTask?.cancel()
+        isPaginating = false
 
-        let trimmed = searchQuery.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else {
+        guard !trimmedQuery.isEmpty else {
             activeSearchID = UUID()
             searchResults = []
             isSearching = false
@@ -97,36 +144,32 @@ final class SearchViewModel {
 
         let searchID = UUID()
         activeSearchID = searchID
-
         isSearching = true
+        currentPage = 0
+        totalPages = 1
 
-        searchTask = Task { [weak self] in
-            guard let self else { return }
+        searchTask = Task { await performSearch(id: searchID) }
+    }
 
-            do {
-                try await Task.sleep(nanoseconds: Constants.debounceNanoseconds)
-            } catch {
-                return
-            }
+    private func performSearch(id: UUID) async {
+        do {
+            try await Task.sleep(nanoseconds: Constants.debounceNanoseconds)
+        } catch { return }
 
-            guard !Task.isCancelled, self.activeSearchID == searchID else { return }
+        guard !Task.isCancelled, activeSearchID == id else { return }
 
-            do {
-                let response = try await self.repository.searchMovies(
-                    query: trimmed,
-                    page: 1
-                )
-                guard !Task.isCancelled, self.activeSearchID == searchID else { return }
-                self.searchResults = response.results
-            } catch is CancellationError {
-                // Swallow cancellation
-            } catch {
-                // Error state for search results is delivery 5
-            }
-
-            guard self.activeSearchID == searchID else { return }
-            self.isSearching = false
-            self.searchTask = nil
+        do {
+            let response = try await repository.searchMovies(query: trimmedQuery, page: 1)
+            guard !Task.isCancelled, activeSearchID == id else { return }
+            applyResponse(response, replace: true)
+        } catch is CancellationError {
+            // Swallow cancellation
+        } catch {
+            // Error state for search results is delivery 5
         }
+
+        guard activeSearchID == id else { return }
+        isSearching = false
+        searchTask = nil
     }
 }

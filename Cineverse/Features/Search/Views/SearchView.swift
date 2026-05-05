@@ -77,7 +77,7 @@ struct SearchView: View {
             viewModel.clearSearch()
         }
         .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
-        .padding(.top, DesignSystem.Spacing.sm)
+        .padding(.vertical, DesignSystem.Spacing.sm)
     }
 
     private var searchResultsContent: some View {
@@ -103,11 +103,19 @@ struct SearchView: View {
     }
 
     private var resultRows: some View {
-        ForEach(Array(viewModel.searchResultItems.enumerated()), id: \.element.id) { index, item in
+        ForEach(
+            Array(viewModel.searchResultItems.enumerated()),
+            id: \.element.id
+        ) { index, item in
             SearchResultRowView(
                 item: item,
                 showDivider: index < viewModel.searchResultItems.count - 1
             )
+            .onAppear {
+                if index == viewModel.searchResultItems.count - 3 {
+                    Task { await viewModel.loadNextPage() }
+                }
+            }
         }
     }
 
