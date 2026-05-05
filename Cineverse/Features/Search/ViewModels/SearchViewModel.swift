@@ -65,6 +65,11 @@ final class SearchViewModel {
 
     // MARK: - Search
 
+    var searchResultItems: [SearchResultRowItem] {
+        let allGenres = genreItems.map(\.genre)
+        return searchResults.map { SearchResultRowItem(movie: $0, allGenres: allGenres) }
+    }
+
     var hasSearchQuery: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -93,6 +98,8 @@ final class SearchViewModel {
         let searchID = UUID()
         activeSearchID = searchID
 
+        isSearching = true
+
         searchTask = Task { [weak self] in
             guard let self else { return }
 
@@ -103,8 +110,6 @@ final class SearchViewModel {
             }
 
             guard !Task.isCancelled, self.activeSearchID == searchID else { return }
-
-            self.isSearching = true
 
             do {
                 let response = try await self.repository.searchMovies(
