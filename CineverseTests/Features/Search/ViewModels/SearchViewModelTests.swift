@@ -125,6 +125,51 @@ struct SearchViewModelTests {
         #expect(viewModel.hasSearchQuery == true)
     }
 
+    // MARK: - Empty State
+
+    @Test("showsEmptyState is false when no query")
+    func emptyStateFalseNoQuery() {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+        #expect(viewModel.showsEmptyState == false)
+    }
+
+    @Test("showsEmptyState is false while searching")
+    func emptyStateFalseWhileSearching() {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+        viewModel.searchQuery = "batman"
+        #expect(viewModel.isSearching == true)
+        #expect(viewModel.showsEmptyState == false)
+    }
+
+    @Test("showsEmptyState is true when query present, not searching, results empty")
+    func emptyStateTrueWhenNoResults() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .success(MovieResponse(page: 1, results: [], totalPages: 1, totalResults: 0))
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "xyznonexistent"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.isSearching == false)
+        #expect(viewModel.searchResults.isEmpty)
+        #expect(viewModel.showsEmptyState == true)
+    }
+
+    @Test("showsEmptyState is false when results exist")
+    func emptyStateFalseWithResults() async {
+        let repository = SearchRepositorySpy()
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(!viewModel.searchResults.isEmpty)
+        #expect(viewModel.showsEmptyState == false)
+    }
+
+    // MARK: - Clear Search
+
     @Test("clearSearch resets query and results")
     func clearSearch() {
         let viewModel = SearchViewModel(repository: SearchRepositorySpy())

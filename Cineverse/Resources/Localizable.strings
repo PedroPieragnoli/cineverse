@@ -96,3 +96,9 @@
 
 /* Section title for browse by genre grid */
 "search.browseByGenre.title" = "Browse by Genre";
+
+/* Empty state title when search returns no results */
+"search.emptyState.title" = "No movies found";
+
+/* Empty state subtitle when search returns no results */
+"search.emptyState.subtitle" = "Try a different search term";

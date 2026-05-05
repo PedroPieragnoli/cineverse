@@ -89,6 +89,10 @@ final class SearchViewModel {
         !trimmedQuery.isEmpty
     }
 
+    var showsEmptyState: Bool {
+        !isSearching && hasSearchQuery && searchResults.isEmpty
+    }
+
     private var trimmedQuery: String {
         searchQuery.trimmingCharacters(in: .whitespaces)
     }

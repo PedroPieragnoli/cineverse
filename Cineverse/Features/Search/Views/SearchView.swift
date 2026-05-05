@@ -85,6 +85,8 @@ struct SearchView: View {
             LazyVStack(spacing: 0) {
                 if viewModel.isSearching {
                     skeletonRows
+                } else if viewModel.showsEmptyState {
+                    SearchEmptyStateView()
                 } else {
                     resultRows
                     paginationSpinner
@@ -169,6 +171,16 @@ struct SearchView: View {
 #Preview("Search - Results") {
     let viewModel = SearchViewModel(repository: PreviewSearchRepository())
     viewModel.searchQuery = "mario"
+    return SearchView(viewModel: viewModel)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Search - Empty") {
+    let emptyResponse = MovieResponse(page: 1, results: [], totalPages: 1, totalResults: 0)
+    let viewModel = SearchViewModel(
+        repository: PreviewSearchRepository(searchResult: emptyResponse)
+    )
+    viewModel.searchQuery = "xyznonexistent"
     return SearchView(viewModel: viewModel)
         .preferredColorScheme(.dark)
 }
