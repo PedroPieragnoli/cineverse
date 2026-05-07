@@ -111,5 +111,6 @@ enum DesignSystem {
         static let inputHeight: CGFloat = 52
         static let iconSizeMd: CGFloat = 20
         static let errorIconSize: CGFloat = 72
+        static let compactErrorIconSize: CGFloat = 40
     }
 }

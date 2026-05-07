@@ -97,6 +97,15 @@
 /* Section title for browse by genre grid */
 "search.browseByGenre.title" = "Explorar por gênero";
 
+/* Error state title when genre loading fails */
+"search.genreError.title" = "Não foi possível carregar os gêneros";
+
+/* Error state subtitle when genre loading fails */
+"search.genreError.subtitle" = "Verifique sua conexão e tente novamente";
+
+/* Retry button title on genre error state */
+"search.genreError.retryButton" = "Tentar novamente";
+
 /* Empty state title when search returns no results */
 "search.emptyState.title" = "Nenhum filme encontrado";
 

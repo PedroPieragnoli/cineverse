@@ -80,6 +80,7 @@ struct SearchViewModelTests {
         await viewModel.loadGenres()
         #expect(viewModel.hasLoadedGenres == false)
         #expect(viewModel.genreError != nil)
+        #expect(viewModel.showsGenreError == true)
 
         repository.genresResult = .success(Genre.mockArray)
         await viewModel.retryLoadGenres()
@@ -87,6 +88,7 @@ struct SearchViewModelTests {
         #expect(repository.fetchGenresCallCount == 2)
         #expect(viewModel.hasLoadedGenres == true)
         #expect(viewModel.genreError == nil)
+        #expect(viewModel.showsGenreError == false)
         #expect(!viewModel.genreItems.isEmpty)
     }
 
@@ -102,6 +104,26 @@ struct SearchViewModelTests {
         #expect(viewModel.genreItems[0].genre.name == "Action")
         #expect(viewModel.genreItems[1].genre.name == "Comedy")
         #expect(viewModel.genreItems[2].genre.name == "Drama")
+    }
+
+    // MARK: - showsGenreError
+
+    @Test("showsGenreError is true when genreError is set and not loading")
+    func showsGenreErrorTrue() async {
+        let repository = SearchRepositorySpy(
+            genresResult: .failure(TMDBNetworkingError.network)
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        await viewModel.loadGenres()
+
+        #expect(viewModel.showsGenreError == true)
+    }
+
+    @Test("showsGenreError is false when no error")
+    func showsGenreErrorFalseNoError() {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+        #expect(viewModel.showsGenreError == false)
     }
 
     // MARK: - Search State

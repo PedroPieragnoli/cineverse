@@ -23,6 +23,10 @@ final class SearchViewModel {
     var genreError: Error?
     private(set) var hasLoadedGenres = false
 
+    var showsGenreError: Bool {
+        genreError != nil && !isLoadingGenres
+    }
+
     // MARK: - Search State
 
     var searchQuery = "" {

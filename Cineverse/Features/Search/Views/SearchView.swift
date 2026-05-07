@@ -86,7 +86,7 @@ struct SearchView: View {
                 if viewModel.isSearching {
                     skeletonRows
                 } else if viewModel.searchError != nil {
-                    SearchErrorStateView {
+                    ErrorStateView(configuration: .searchError) {
                         viewModel.retrySearch()
                     }
                 } else if viewModel.showsEmptyState {
@@ -140,8 +140,14 @@ struct SearchView: View {
     private var genreScrollContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-                sectionTitle
-                GenreGridView(items: viewModel.genreItems)
+                if viewModel.showsGenreError {
+                    ErrorStateView(configuration: .genreError) {
+                        Task { await viewModel.retryLoadGenres() }
+                    }
+                } else {
+                    sectionTitle
+                    GenreGridView(items: viewModel.genreItems)
+                }
             }
             .padding(.top, DesignSystem.Spacing.lg)
         }
@@ -194,6 +200,13 @@ struct SearchView: View {
     viewModel.searchQuery = "batman"
     viewModel.isSearching = false
     viewModel.searchError = .network
+    return SearchView(viewModel: viewModel)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Search - Genre Error") {
+    let viewModel = SearchViewModel(repository: PreviewSearchRepository())
+    viewModel.genreError = SearchLoadError.network
     return SearchView(viewModel: viewModel)
         .preferredColorScheme(.dark)
 }
