@@ -38,6 +38,8 @@ struct SearchView: View {
 
     let viewModel: SearchViewModel
 
+    @FocusState private var isSearchBarFocused: Bool
+
     // MARK: - Body
 
     var body: some View {
@@ -72,7 +74,8 @@ struct SearchView: View {
 
     private var searchBar: some View {
         SearchBarView(
-            text: Bindable(viewModel).searchQuery
+            text: Bindable(viewModel).searchQuery,
+            isFocused: $isSearchBarFocused
         ) {
             viewModel.clearSearch()
         }

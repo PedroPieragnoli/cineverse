@@ -11,11 +11,11 @@ struct SearchBarView: View {
     }
 
     @Binding var text: String
+    var isFocused: FocusState<Bool>.Binding
     var onCancel: () -> Void
-    @FocusState private var isFocused: Bool
     @State private var showsCancelButton = false
 
-    private var isActive: Bool { isFocused || !text.isEmpty }
+    private var isActive: Bool { isFocused.wrappedValue || !text.isEmpty }
     private var showsClearButton: Bool { !text.isEmpty }
 
     var body: some View {
@@ -23,9 +23,9 @@ struct SearchBarView: View {
             searchBarContainer
             if showsCancelButton { cancelButton }
         }
-        .onChange(of: isFocused) {
+        .onChange(of: isFocused.wrappedValue) {
             withAnimation(.easeInOut(duration: DesignSystem.Animation.standard)) {
-                showsCancelButton = isFocused
+                showsCancelButton = isFocused.wrappedValue
             }
         }
     }
@@ -59,7 +59,7 @@ struct SearchBarView: View {
         .font(DesignSystem.Typography.body)
         .foregroundStyle(.white)
         .tint(DesignSystem.Colors.primary)
-        .focused($isFocused)
+        .focused(isFocused)
     }
 
     private var clearButton: some View {
@@ -81,7 +81,7 @@ struct SearchBarView: View {
     private var cancelButton: some View {
         Button {
             onCancel()
-            isFocused = false
+            isFocused.wrappedValue = false
         } label: {
             Text(String(localized: "search.bar.cancel"))
                 .font(DesignSystem.Typography.body)
@@ -116,17 +116,19 @@ struct SearchBarView: View {
 
 #if DEBUG
 #Preview("Idle State") {
+    @Previewable @FocusState var isFocused: Bool
     ZStack {
         Color.black.ignoresSafeArea()
-        SearchBarView(text: .constant("")) {}
+        SearchBarView(text: .constant(""), isFocused: $isFocused) {}
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
     }
 }
 
 #Preview("Typing State") {
+    @Previewable @FocusState var isFocused: Bool
     ZStack {
         Color.black.ignoresSafeArea()
-        SearchBarView(text: .constant("Interstellar")) {}
+        SearchBarView(text: .constant("Interstellar"), isFocused: $isFocused) {}
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
     }
 }
