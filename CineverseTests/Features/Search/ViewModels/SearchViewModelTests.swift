@@ -458,6 +458,10 @@ private final class SearchRepositorySpy: SearchRepository {
         }
         return try searchResult.get()
     }
+
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse {
+        .mock
+    }
 }
 
 private func makeMovieResponse(_ movies: [Movie]) -> MovieResponse {

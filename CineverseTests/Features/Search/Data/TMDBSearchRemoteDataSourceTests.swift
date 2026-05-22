@@ -78,6 +78,43 @@ struct TMDBSearchRemoteDataSourceTests {
         #expect(request.path == "/genre/movie/list")
     }
 
+    @Test("discoverMovies builds the expected /discover/movie URL with sort_by, with_genres, page, include_adult")
+    func discoverBuildsExpectedRequest() async throws {
+        let client = HTTPClientSpy()
+        client.responseDataByPath["/discover/movie"] = encode(
+            MovieResponse(
+                page: 1,
+                results: [makeMovie(id: 501)],
+                totalPages: 12,
+                totalResults: 240
+            )
+        )
+
+        let environment = TMDBEnvironment(
+            baseURL: URL(string: "https://api.themoviedb.org/3")!,
+            readAccessToken: "token-123",
+            language: "en",
+            region: "US"
+        )
+        let dataSource = TMDBSearchRemoteDataSource(
+            httpClient: client,
+            requestBuilder: TMDBRequestBuilder(environment: environment)
+        )
+
+        let response = try await dataSource.discoverMovies(genreID: 28, page: 2)
+        let request = try #require(client.capturedRequests.first)
+
+        #expect(response.results.first?.id == 501)
+        #expect(request.method == .get)
+        #expect(request.path == "/discover/movie")
+        #expect(request.queryItems.contains { $0.name == "with_genres" && $0.value == "28" })
+        #expect(request.queryItems.contains { $0.name == "page" && $0.value == "2" })
+        #expect(request.queryItems.contains { $0.name == "sort_by" && $0.value == "popularity.desc" })
+        #expect(request.queryItems.contains { $0.name == "include_adult" && $0.value == "false" })
+        #expect(request.queryItems.contains { $0.name == "language" && $0.value == "en" })
+        #expect(request.queryItems.contains { $0.name == "region" && $0.value == "US" })
+    }
+
     @Test("Search request encodes page number as string")
     func searchEncodesPageNumber() async throws {
         let client = HTTPClientSpy()

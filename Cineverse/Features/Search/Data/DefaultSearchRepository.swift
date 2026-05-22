@@ -20,6 +20,10 @@ struct DefaultSearchRepository: SearchRepository {
         let response = try await remoteDataSource.fetchGenres()
         return response.genres
     }
+
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse {
+        try await remoteDataSource.discoverMovies(genreID: genreID, page: page)
+    }
 }
 
 extension DefaultSearchRepository {

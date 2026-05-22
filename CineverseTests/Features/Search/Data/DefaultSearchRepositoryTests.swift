@@ -81,11 +81,44 @@ struct DefaultSearchRepositoryTests {
         #expect(spy.capturedQuery == "Matrix")
         #expect(spy.capturedPage == 3)
     }
+
+    @Test("Repository returns discover response from remote data source")
+    func returnsDiscoverResponse() async throws {
+        let expectedResponse = makeMovieResponse([makeMovie(id: 42)])
+        let repository = DefaultSearchRepository(
+            remoteDataSource: SearchRemoteDataSourceStub(
+                searchResult: .success(makeMovieResponse([])),
+                genres: .success(GenreResponse(genres: [])),
+                discoverResult: .success(expectedResponse)
+            )
+        )
+
+        let response = try await repository.discoverMovies(genreID: 28, page: 1)
+
+        #expect(response.results.map(\.id) == [42])
+    }
+
+    @Test("Discover forwards genre ID and page to remote data source")
+    func discoverForwardsGenreIDAndPage() async throws {
+        let spy = SearchRemoteDataSourceSpy(
+            searchResult: makeMovieResponse([]),
+            genres: GenreResponse(genres: [])
+        )
+        let repository = DefaultSearchRepository(remoteDataSource: spy)
+
+        _ = try await repository.discoverMovies(genreID: 28, page: 4)
+
+        #expect(spy.capturedDiscoverGenreID == 28)
+        #expect(spy.capturedDiscoverPage == 4)
+    }
 }
 
 private struct SearchRemoteDataSourceStub: SearchRemoteDataSource {
     let searchResult: Result<MovieResponse, Error>
     let genres: Result<GenreResponse, Error>
+    var discoverResult: Result<MovieResponse, Error> = .success(
+        MovieResponse(page: 1, results: [], totalPages: 1, totalResults: 0)
+    )
 
     func searchMovies(query: String, page: Int) async throws -> MovieResponse {
         try searchResult.get()
@@ -94,6 +127,10 @@ private struct SearchRemoteDataSourceStub: SearchRemoteDataSource {
     func fetchGenres() async throws -> GenreResponse {
         try genres.get()
     }
+
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse {
+        try discoverResult.get()
+    }
 }
 
 private final class SearchRemoteDataSourceSpy: SearchRemoteDataSource {
@@ -101,6 +138,8 @@ private final class SearchRemoteDataSourceSpy: SearchRemoteDataSource {
     let genres: GenreResponse
     private(set) var capturedQuery: String?
     private(set) var capturedPage: Int?
+    private(set) var capturedDiscoverGenreID: Int?
+    private(set) var capturedDiscoverPage: Int?
 
     init(searchResult: MovieResponse, genres: GenreResponse) {
         self.searchResult = searchResult
@@ -115,6 +154,12 @@ private final class SearchRemoteDataSourceSpy: SearchRemoteDataSource {
 
     func fetchGenres() async throws -> GenreResponse {
         genres
+    }
+
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse {
+        capturedDiscoverGenreID = genreID
+        capturedDiscoverPage = page
+        return searchResult
     }
 }
 

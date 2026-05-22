@@ -37,4 +37,18 @@ struct TMDBSearchRemoteDataSource: SearchRemoteDataSource {
         )
         return try await httpClient.send(request)
     }
+
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse {
+        let request: APIRequest<MovieResponse> = try requestBuilder.makeRequest(
+            method: .get,
+            path: "/discover/movie",
+            queryItems: [
+                URLQueryItem(name: "with_genres", value: String(genreID)),
+                URLQueryItem(name: "page", value: String(page)),
+                URLQueryItem(name: "sort_by", value: "popularity.desc"),
+                URLQueryItem(name: "include_adult", value: "false")
+            ]
+        )
+        return try await httpClient.send(request)
+    }
 }

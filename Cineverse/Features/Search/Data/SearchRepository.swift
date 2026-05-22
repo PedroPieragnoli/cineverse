@@ -8,4 +8,5 @@ import Foundation
 protocol SearchRepository {
     func searchMovies(query: String, page: Int) async throws -> MovieResponse
     func fetchGenres() async throws -> [Genre]
+    func discoverMovies(genreID: Int, page: Int) async throws -> MovieResponse
 }
