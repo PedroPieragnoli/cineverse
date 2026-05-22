@@ -37,6 +37,8 @@ struct SearchView: View {
     // MARK: - Properties
 
     let viewModel: SearchViewModel
+    var hiddenTransitionSourceID: String?
+    var onDetailRequested: (DetailRoute) -> Void = { _ in }
 
     @FocusState private var isSearchBarFocused: Bool
 
@@ -119,7 +121,9 @@ struct SearchView: View {
         ) { index, item in
             SearchResultRowView(
                 item: item,
-                showDivider: index < viewModel.searchResultItems.count - 1
+                showDivider: index < viewModel.searchResultItems.count - 1,
+                isSourceHidden: hiddenTransitionSourceID == DetailRoute.transitionSourceID(for: item.movie.id),
+                onTap: handleResultTapped
             )
             .onAppear {
                 if index == viewModel.searchResultItems.count - 3 {
@@ -162,6 +166,22 @@ struct SearchView: View {
             .font(DesignSystem.Typography.sectionTitle)
             .foregroundStyle(.white)
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
+    }
+
+    // MARK: - Actions
+
+    private func handleResultTapped(_ movie: Movie, frame: CGRect) {
+        isSearchBarFocused = false
+        onDetailRequested(
+            DetailRoute(
+                movie: movie,
+                source: .posterCard,
+                sourcePosterFrame: frame,
+                customTransitionSourceID: DetailRoute.transitionSourceID(for: movie.id),
+                sourceCornerRadius: DesignSystem.CornerRadius.small,
+                sourcePosterURL: movie.thumbnailPosterURL
+            )
+        )
     }
 }
 

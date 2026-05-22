@@ -24,24 +24,37 @@ struct SearchResultRowView: View {
 
     let item: SearchResultRowItem
     var showDivider: Bool = true
+    var isSourceHidden: Bool = false
+    var onTap: ((Movie, CGRect) -> Void)?
 
     @State private var loadFailed = false
+    @State private var posterFrame: CGRect = .zero
 
     // MARK: - Body
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
-                posterThumbnail
-                infoBlock
-                Spacer(minLength: 0)
+            Button { onTap?(item.movie, posterFrame) } label: {
+                HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+                    posterThumbnail
+                        .onGeometryChange(for: CGRect.self) { proxy in
+                            proxy.frame(in: .global)
+                        } action: { frame in
+                            posterFrame = frame
+                        }
+                        .opacity(isSourceHidden ? 0 : 1)
+                    infoBlock
+                    Spacer(minLength: 0)
+                }
+                .padding(.bottom, Layout.bottomSpacing)
+                .contentShape(Rectangle())
             }
-            .padding(.bottom, Layout.bottomSpacing)
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityDescription)
 
             dividerLine
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityDescription)
     }
 
     // MARK: - Subviews

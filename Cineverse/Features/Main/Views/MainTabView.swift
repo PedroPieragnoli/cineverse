@@ -59,7 +59,11 @@ struct MainTabView: View {
         case .home:
             homeTabRoot
         case .search:
-            SearchView(viewModel: searchViewModel)
+            SearchView(
+                viewModel: searchViewModel,
+                hiddenTransitionSourceID: detailCoordinator.hiddenTransitionSourceID,
+                onDetailRequested: handleDetailRequested
+            )
         case .comingSoon, .myList:
             NavigationStack {
                 placeholderView(for: tab)
