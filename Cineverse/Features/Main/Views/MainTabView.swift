@@ -70,7 +70,8 @@ struct MainTabView: View {
                 )
                 .navigationDestination(for: GenreResultsRoute.self) { route in
                     GenreResultsView(
-                        viewModel: GenreResultsViewModel(genre: route.genre, repository: searchRepository),
+                        genre: route.genre,
+                        repository: searchRepository,
                         gradient: route.gradient,
                         onDetailRequested: handleDetailRequested
                     )

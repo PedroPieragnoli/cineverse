@@ -10,11 +10,22 @@ struct GenreResultsView: View {
         static let scrolledPastHeroThreshold: CGFloat = 120
     }
 
-    let viewModel: GenreResultsViewModel
+    @State private var viewModel: GenreResultsViewModel
     let gradient: GenreGradientStyle
-    var onDetailRequested: (DetailRoute) -> Void = { _ in }
+    let onDetailRequested: (DetailRoute) -> Void
 
     @State private var hasScrolledPastHero = false
+
+    init(
+        genre: Genre,
+        repository: SearchRepository,
+        gradient: GenreGradientStyle,
+        onDetailRequested: @escaping (DetailRoute) -> Void = { _ in }
+    ) {
+        _viewModel = State(initialValue: GenreResultsViewModel(genre: genre, repository: repository))
+        self.gradient = gradient
+        self.onDetailRequested = onDetailRequested
+    }
 
     // MARK: - Body
 
@@ -142,9 +153,12 @@ private extension GenreResultsView {
         genreIndex: Int = 0
     ) -> some View {
         let styledGenre = GenreGradientMapper.map(SearchGenreMocks.all)[genreIndex]
-        let viewModel = GenreResultsViewModel(genre: styledGenre.genre, repository: repository)
         return NavigationStack {
-            GenreResultsView(viewModel: viewModel, gradient: styledGenre.style)
+            GenreResultsView(
+                genre: styledGenre.genre,
+                repository: repository,
+                gradient: styledGenre.style
+            )
         }
         .preferredColorScheme(.dark)
     }
