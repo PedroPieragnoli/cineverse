@@ -70,8 +70,9 @@ struct GenreResultsView: View {
         switch viewModel.phase {
         case .loading:
             SkeletonSearchResultsList()
-        case .loaded:
+        case .loaded, .paginating:
             resultRows
+            paginationSpinner
         case .empty:
             SearchEmptyStateView(
                 titleKey: "genre.results.empty.title",
@@ -91,6 +92,22 @@ struct GenreResultsView: View {
                 showDivider: index < rowItems.count - 1,
                 onTap: handleResultTapped
             )
+            .onAppear {
+                if index == rowItems.count - 3 {
+                    Task { await viewModel.loadNextPageIfNeeded() }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var paginationSpinner: some View {
+        if case .paginating = viewModel.phase {
+            ProgressView()
+                .tint(DesignSystem.Colors.primary)
+                .frame(height: DesignSystem.Spacing.xxl)
+                .frame(maxWidth: .infinity)
+                .padding(.top, DesignSystem.Spacing.lg)
         }
     }
 

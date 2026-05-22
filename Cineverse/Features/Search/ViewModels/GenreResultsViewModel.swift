@@ -13,6 +13,7 @@ final class GenreResultsViewModel {
         case loaded
         case empty
         case error(SearchLoadError)
+        case paginating
     }
 
     let genre: Genre
@@ -44,10 +45,25 @@ final class GenreResultsViewModel {
         await fetchFirstPage()
     }
 
+    func loadNextPageIfNeeded() async {
+        guard phase == .loaded, currentPage < totalPages else { return }
+        phase = .paginating
+
+        do {
+            let response = try await repository.discoverMovies(genreID: genre.id, page: currentPage + 1)
+            apply(response, replace: false)
+        } catch is CancellationError {
+            phase = .loaded
+        } catch {
+            // Silently ignore — user already has results; scrolling will retry
+            phase = .loaded
+        }
+    }
+
     private func fetchFirstPage() async {
         do {
             let response = try await repository.discoverMovies(genreID: genre.id, page: 1)
-            apply(response)
+            apply(response, replace: true)
         } catch is CancellationError {
             // Swallow cancellation
         } catch {
@@ -55,10 +71,14 @@ final class GenreResultsViewModel {
         }
     }
 
-    private func apply(_ response: MovieResponse) {
-        results = response.results
+    private func apply(_ response: MovieResponse, replace: Bool) {
+        if replace {
+            results = response.results
+        } else {
+            results.append(contentsOf: response.results)
+        }
         currentPage = response.page
         totalPages = response.totalPages
-        phase = response.results.isEmpty ? .empty : .loaded
+        phase = results.isEmpty ? .empty : .loaded
     }
 }
