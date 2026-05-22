@@ -120,3 +120,9 @@
 
 /* Retry button title on search error state */
 "search.errorState.retryButton" = "Retry";
+
+/* Empty state title on the genre results screen */
+"genre.results.empty.title" = "No movies in this genre";
+
+/* Empty state subtitle on the genre results screen */
+"genre.results.empty.subtitle" = "Check back later";

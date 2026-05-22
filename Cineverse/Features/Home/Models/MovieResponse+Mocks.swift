@@ -13,5 +13,12 @@ extension MovieResponse {
         totalPages: 38020,
         totalResults: 760385
     )
+
+    static let empty = MovieResponse(
+        page: 1,
+        results: [],
+        totalPages: 1,
+        totalResults: 0
+    )
 }
 #endif

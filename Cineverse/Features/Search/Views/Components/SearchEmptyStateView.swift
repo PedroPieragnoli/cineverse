@@ -10,6 +10,9 @@ struct SearchEmptyStateView: View {
         static let iconSize: CGFloat = 40
     }
 
+    var titleKey: LocalizedStringResource = "search.emptyState.title"
+    var subtitleKey: LocalizedStringResource = "search.emptyState.subtitle"
+
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.sm) {
             icon
@@ -29,13 +32,13 @@ struct SearchEmptyStateView: View {
     }
 
     private var title: some View {
-        Text(String(localized: "search.emptyState.title"))
+        Text(String(localized: titleKey))
             .font(DesignSystem.Typography.body)
             .foregroundStyle(.white)
     }
 
     private var subtitle: some View {
-        Text(String(localized: "search.emptyState.subtitle"))
+        Text(String(localized: subtitleKey))
             .font(DesignSystem.Typography.smallMetadata)
             .foregroundStyle(DesignSystem.Colors.secondaryText)
     }
@@ -44,9 +47,18 @@ struct SearchEmptyStateView: View {
 // MARK: - Previews
 
 #if DEBUG
-#Preview {
+#Preview("Search") {
     SearchEmptyStateView()
         .background(DesignSystem.Colors.background)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Genre") {
+    SearchEmptyStateView(
+        titleKey: "genre.results.empty.title",
+        subtitleKey: "genre.results.empty.subtitle"
+    )
+    .background(DesignSystem.Colors.background)
+    .preferredColorScheme(.dark)
 }
 #endif

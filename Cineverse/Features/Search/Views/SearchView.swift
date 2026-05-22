@@ -9,7 +9,6 @@ struct SearchView: View {
     // MARK: - Layout Constants
 
     private enum Layout {
-        static let skeletonRowCount = 4
         static let genreExitDuration: TimeInterval = 0.2
         static let resultsEntryDuration: TimeInterval = 0.25
         static let resultsEntryDelay: TimeInterval = 0.05
@@ -67,6 +66,7 @@ struct SearchView: View {
         }
         .animation(.easeOut(duration: Layout.resultsEntryDuration), value: viewModel.hasSearchQuery)
         .background(DesignSystem.Colors.background.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             await viewModel.loadGenres()
         }
@@ -89,7 +89,7 @@ struct SearchView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 if viewModel.isSearching {
-                    skeletonRows
+                    SkeletonSearchResultsList()
                 } else if viewModel.searchError != nil {
                     ErrorStateView(configuration: .searchError) {
                         viewModel.retrySearch()
@@ -106,12 +106,6 @@ struct SearchView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .scrollIndicators(.hidden)
-    }
-
-    private var skeletonRows: some View {
-        ForEach(0..<Layout.skeletonRowCount, id: \.self) { index in
-            SkeletonSearchResultRowView(showDivider: index < Layout.skeletonRowCount - 1)
-        }
     }
 
     private var resultRows: some View {

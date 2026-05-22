@@ -89,6 +89,7 @@ enum DesignSystem {
         static let metadata: Font = .system(size: 14, weight: .medium)
         static let buttonTitle: Font = .system(size: 14, weight: .bold)
         static let appTitle: Font = .system(size: 20, weight: .bold)
+        static let navTitle: Font = .system(size: 17, weight: .semibold)
         static let detailSectionTitle: Font = .system(size: 18, weight: .bold)
         static let bodyText: Font = .system(size: 14, weight: .regular)
         static let detailCaption: Font = .system(size: 12, weight: .regular)

@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-struct GenreGradientStyle: Equatable {
+struct GenreGradientStyle: Hashable {
     let startColor: Color
     let endColor: Color
 
