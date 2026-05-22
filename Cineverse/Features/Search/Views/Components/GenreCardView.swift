@@ -13,14 +13,18 @@ struct GenreCardView: View {
     let item: GenreGradientItem
 
     var body: some View {
-        item.linearGradient
-            .frame(height: Layout.height)
-            .clipShape(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.card, style: .continuous)
-            )
-            .overlay(alignment: .bottomLeading) {
-                genreLabel
-            }
+        NavigationLink(value: GenreResultsRoute(genre: item.genre, gradient: item.style)) {
+            item.linearGradient
+                .frame(height: Layout.height)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.card, style: .continuous)
+                )
+                .overlay(alignment: .bottomLeading) {
+                    genreLabel
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(item.genre.name))
     }
 
     // MARK: - Subviews
@@ -37,19 +41,23 @@ struct GenreCardView: View {
 // MARK: - Previews
 
 #if DEBUG
-#Preview("Action") {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        GenreCardView(item: GenreGradientMapper.map(SearchGenreMocks.all)[0])
-            .padding(.horizontal, DesignSystem.Spacing.md)
+private extension GenreCardView {
+    static func preview(genreIndex: Int) -> some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                GenreCardView(item: GenreGradientMapper.map(SearchGenreMocks.all)[genreIndex])
+                    .padding(.horizontal, DesignSystem.Spacing.md)
+            }
+        }
     }
 }
 
+#Preview("Action") {
+    GenreCardView.preview(genreIndex: 0)
+}
+
 #Preview("Animation") {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        GenreCardView(item: GenreGradientMapper.map(SearchGenreMocks.all)[2])
-            .padding(.horizontal, DesignSystem.Spacing.md)
-    }
+    GenreCardView.preview(genreIndex: 2)
 }
 #endif

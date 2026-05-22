@@ -10,6 +10,8 @@ struct MainTabView: View {
     @State private var detailCoordinator = DetailHeroCoordinator()
     @State private var heroAnimator = DetailHeroAnimator()
 
+    private let searchRepository: SearchRepository
+
     @MainActor
     init(
         initialTab: TabItem = .home,
@@ -19,6 +21,7 @@ struct MainTabView: View {
         _selectedTab = State(initialValue: initialTab)
         _homeViewModel = State(initialValue: HomeViewModel(repository: repository))
         _searchViewModel = State(initialValue: SearchViewModel(repository: searchRepository))
+        self.searchRepository = searchRepository
     }
 
     var body: some View {
@@ -59,11 +62,20 @@ struct MainTabView: View {
         case .home:
             homeTabRoot
         case .search:
-            SearchView(
-                viewModel: searchViewModel,
-                hiddenTransitionSourceID: detailCoordinator.hiddenTransitionSourceID,
-                onDetailRequested: handleDetailRequested
-            )
+            NavigationStack {
+                SearchView(
+                    viewModel: searchViewModel,
+                    hiddenTransitionSourceID: detailCoordinator.hiddenTransitionSourceID,
+                    onDetailRequested: handleDetailRequested
+                )
+                .navigationDestination(for: GenreResultsRoute.self) { route in
+                    GenreResultsView(
+                        viewModel: GenreResultsViewModel(genre: route.genre, repository: searchRepository),
+                        gradient: route.gradient,
+                        onDetailRequested: handleDetailRequested
+                    )
+                }
+            }
         case .comingSoon, .myList:
             NavigationStack {
                 placeholderView(for: tab)
