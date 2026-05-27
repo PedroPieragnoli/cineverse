@@ -12,6 +12,7 @@ struct GenreResultsView: View {
 
     @State private var viewModel: GenreResultsViewModel
     let gradient: GenreGradientStyle
+    let hiddenTransitionSourceID: String?
     let onDetailRequested: (DetailRoute) -> Void
 
     @State private var hasScrolledPastHero = false
@@ -20,10 +21,12 @@ struct GenreResultsView: View {
         genre: Genre,
         repository: SearchRepository,
         gradient: GenreGradientStyle,
+        hiddenTransitionSourceID: String? = nil,
         onDetailRequested: @escaping (DetailRoute) -> Void = { _ in }
     ) {
         _viewModel = State(initialValue: GenreResultsViewModel(genre: genre, repository: repository))
         self.gradient = gradient
+        self.hiddenTransitionSourceID = hiddenTransitionSourceID
         self.onDetailRequested = onDetailRequested
     }
 
@@ -101,6 +104,7 @@ struct GenreResultsView: View {
             SearchResultRowView(
                 item: item,
                 showDivider: index < rowItems.count - 1,
+                isSourceHidden: hiddenTransitionSourceID == DetailRoute.transitionSourceID(for: item.movie.id),
                 onTap: handleResultTapped
             )
             .onAppear {

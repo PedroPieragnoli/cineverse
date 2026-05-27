@@ -73,6 +73,7 @@ struct MainTabView: View {
                         genre: route.genre,
                         repository: searchRepository,
                         gradient: route.gradient,
+                        hiddenTransitionSourceID: detailCoordinator.hiddenTransitionSourceID,
                         onDetailRequested: handleDetailRequested
                     )
                 }
