@@ -76,11 +76,11 @@ struct DetailHeaderView: View {
 
     private var backButton: some View {
         Button(action: onBack) {
-            circularHitArea {
-                Image(systemName: "arrow.left")
+            circularHitArea(alignment: .leading) {
+                Image(systemName: "chevron.backward")
                     .font(.system(
                         size: Layout.buttonIconSize,
-                        weight: .semibold
+                        weight: .bold
                     ))
                     .foregroundStyle(.white)
             }
@@ -91,7 +91,7 @@ struct DetailHeaderView: View {
 
     private var favoriteButton: some View {
         Button(action: onToggleFavorite) {
-            circularHitArea { heartIcon }
+            circularHitArea(alignment: .trailing) { heartIcon }
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.impact(weight: .light), trigger: isFavorite)
@@ -134,12 +134,14 @@ struct DetailHeaderView: View {
     }
 
     private func circularHitArea<Content: View>(
+        alignment: Alignment = .center,
         @ViewBuilder _ content: () -> Content
     ) -> some View {
         content()
             .frame(
                 width: DesignSystem.Layout.buttonHeight,
-                height: DesignSystem.Layout.buttonHeight
+                height: DesignSystem.Layout.buttonHeight,
+                alignment: alignment
             )
             .contentShape(Circle())
     }

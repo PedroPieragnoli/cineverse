@@ -34,37 +34,43 @@ struct GenreResultsView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    GenreResultsHeroBanner(
-                        genre: viewModel.genre,
-                        gradient: gradient,
-                        topSafeAreaInset: geometry.safeAreaInsets.top
-                    )
-                    phaseContent
-                        .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
-                        .padding(.top, DesignSystem.Spacing.md)
-                }
+            scrollContent(topSafeAreaInset: geometry.safeAreaInsets.top)
+        }
+    }
+
+    private func scrollContent(topSafeAreaInset: CGFloat) -> some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                GenreResultsHeroBanner(
+                    genre: viewModel.genre,
+                    gradient: gradient,
+                    topSafeAreaInset: topSafeAreaInset
+                )
+                phaseContent
+                    .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
+                    .padding(.top, DesignSystem.Spacing.md)
             }
-            .scrollIndicators(.hidden)
-            .ignoresSafeArea(edges: .top)
-            .background(DesignSystem.Colors.background.ignoresSafeArea())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    collapsingNavTitle
-                }
+        }
+        .scrollIndicators(.hidden)
+        .ignoresSafeArea(edges: .top)
+        .background(DesignSystem.Colors.background.ignoresSafeArea())
+        .navigationBarTitleDisplayMode(.inline)
+        // Renders the system back button as a bare chevron (no "Back" label) while keeping swipe-back.
+        .toolbarRole(.editor)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                collapsingNavTitle
             }
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-            .toolbarBackground(hasScrolledPastHero ? .visible : .hidden, for: .navigationBar)
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentOffset.y + geometry.contentInsets.top > Layout.scrolledPastHeroThreshold
-            } action: { _, isPastHero in
-                hasScrolledPastHero = isPastHero
-            }
-            .task {
-                await viewModel.loadInitial()
-            }
+        }
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(hasScrolledPastHero ? .visible : .hidden, for: .navigationBar)
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y + geometry.contentInsets.top > Layout.scrolledPastHeroThreshold
+        } action: { _, isPastHero in
+            hasScrolledPastHero = isPastHero
+        }
+        .task {
+            await viewModel.loadInitial()
         }
     }
 
