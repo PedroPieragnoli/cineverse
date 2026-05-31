@@ -239,11 +239,11 @@ struct DetailView: View {
     private var headerOverlay: some View {
         DetailHeaderView(
             horizontalPadding: Layout.horizontalPadding,
-            isFavorite: viewModel.isFavorite,
+            isInMyList: viewModel.isInMyList,
             showsSeparator: scrollOffset > Layout.headerSeparatorScrollThreshold,
             contentOpacity: composedRevealOpacity,
             onBack: handleBackButtonTap,
-            onToggleFavorite: viewModel.toggleFavorite
+            onToggleMyList: viewModel.toggleMyList
         )
     }
 

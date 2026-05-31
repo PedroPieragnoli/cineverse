@@ -17,33 +17,33 @@ struct DetailHeaderView: View {
         static let tintOpacity: CGFloat = 0.95
         static let separatorAnimationDuration: TimeInterval = 0.2
 
-        static let favoriteScaleRestValue: CGFloat = 1.0
-        static let favoriteScaleUpFactor: CGFloat = 1.15
-        static let favoriteScaleUpDuration: TimeInterval = 0.25
-        static let favoriteScaleUpResponse: Double = 0.25
-        static let favoriteScaleUpDamping: Double = 0.5
-        static let favoriteSettleDuration: TimeInterval = 0.3
-        static let favoriteSettleResponse: Double = 0.3
-        static let favoriteSettleDamping: Double = 0.7
+        static let iconRestScale: CGFloat = 1.0
+        static let iconPopScale: CGFloat = 1.15
+        static let iconPopDuration: TimeInterval = 0.25
+        static let iconPopResponse: Double = 0.25
+        static let iconPopDamping: Double = 0.5
+        static let iconSettleDuration: TimeInterval = 0.3
+        static let iconSettleResponse: Double = 0.3
+        static let iconSettleDamping: Double = 0.7
     }
 
     // MARK: - Properties
 
     let horizontalPadding: CGFloat
 
-    let isFavorite: Bool
+    let isInMyList: Bool
     let showsSeparator: Bool
     let contentOpacity: CGFloat
 
     let onBack: () -> Void
-    let onToggleFavorite: () -> Void
+    let onToggleMyList: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 backButton
                 Spacer()
-                favoriteButton
+                myListButton
             }
             .frame(height: Self.contentHeight)
             .padding(.horizontal, horizontalPadding)
@@ -89,45 +89,45 @@ struct DetailHeaderView: View {
         .accessibilityLabel(String(localized: "detail.header.backButton"))
     }
 
-    private var favoriteButton: some View {
-        Button(action: onToggleFavorite) {
-            circularHitArea(alignment: .trailing) { heartIcon }
+    private var myListButton: some View {
+        Button(action: onToggleMyList) {
+            circularHitArea(alignment: .trailing) { myListIcon }
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.impact(weight: .light), trigger: isFavorite)
-        .accessibilityLabel(String(localized: "detail.header.favoriteButton"))
+        .sensoryFeedback(.impact(weight: .light), trigger: isInMyList)
+        .accessibilityLabel(String(localized: "detail.header.myListButton"))
         .accessibilityAddTraits(.isToggle)
         .accessibilityValue(
-            isFavorite
-                ? String(localized: "detail.favorite.state.on")
-                : String(localized: "detail.favorite.state.off")
+            isInMyList
+                ? String(localized: "detail.myList.state.on")
+                : String(localized: "detail.myList.state.off")
         )
     }
 
-    private var heartIcon: some View {
-        Image(systemName: isFavorite ? "heart.fill" : "heart")
+    private var myListIcon: some View {
+        Image(systemName: isInMyList ? "bookmark.fill" : "bookmark")
             .font(.system(size: Layout.buttonIconSize, weight: .semibold))
-            .foregroundStyle(isFavorite ? DesignSystem.Colors.primary : .white)
+            .foregroundStyle(isInMyList ? DesignSystem.Colors.primary : .white)
             .keyframeAnimator(
-                initialValue: Layout.favoriteScaleRestValue,
-                trigger: isFavorite
+                initialValue: Layout.iconRestScale,
+                trigger: isInMyList
             ) { content, value in
                 content.scaleEffect(value)
             } keyframes: { _ in
                 SpringKeyframe(
-                    Layout.favoriteScaleUpFactor,
-                    duration: Layout.favoriteScaleUpDuration,
+                    Layout.iconPopScale,
+                    duration: Layout.iconPopDuration,
                     spring: .init(
-                        response: Layout.favoriteScaleUpResponse,
-                        dampingRatio: Layout.favoriteScaleUpDamping
+                        response: Layout.iconPopResponse,
+                        dampingRatio: Layout.iconPopDamping
                     )
                 )
                 SpringKeyframe(
-                    Layout.favoriteScaleRestValue,
-                    duration: Layout.favoriteSettleDuration,
+                    Layout.iconRestScale,
+                    duration: Layout.iconSettleDuration,
                     spring: .init(
-                        response: Layout.favoriteSettleResponse,
-                        dampingRatio: Layout.favoriteSettleDamping
+                        response: Layout.iconSettleResponse,
+                        dampingRatio: Layout.iconSettleDamping
                     )
                 )
             }
@@ -170,24 +170,24 @@ private func previewContainer<Content: View>(
     previewContainer {
         DetailHeaderView(
             horizontalPadding: PreviewConstants.horizontalPadding,
-            isFavorite: false,
+            isInMyList: false,
             showsSeparator: false,
             contentOpacity: 1,
             onBack: {},
-            onToggleFavorite: {}
+            onToggleMyList: {}
         )
     }
 }
 
-#Preview("Favorited & Scrolled") {
+#Preview("In My List & Scrolled") {
     previewContainer {
         DetailHeaderView(
             horizontalPadding: PreviewConstants.horizontalPadding,
-            isFavorite: true,
+            isInMyList: true,
             showsSeparator: true,
             contentOpacity: 1,
             onBack: {},
-            onToggleFavorite: {}
+            onToggleMyList: {}
         )
     }
 }

@@ -22,7 +22,7 @@ final class DetailViewModel {
     private(set) var error: Error?
     private(set) var hasLoadedInitialData = false
 
-    private(set) var isFavorite: Bool
+    private(set) var isInMyList: Bool
     private(set) var isOverviewExpanded = false
 
     private(set) var showsMetadataSection = false
@@ -39,7 +39,7 @@ final class DetailViewModel {
         self.baseMovie = movie
         self.repository = repository
         self.favoritesStore = favoritesStore
-        self.isFavorite = favoritesStore.contains(movie.id)
+        self.isInMyList = favoritesStore.contains(movie.id)
     }
 
     // MARK: - Derived Text
@@ -117,8 +117,8 @@ final class DetailViewModel {
 
     // MARK: - Actions
 
-    func toggleFavorite() {
-        isFavorite = favoritesStore.toggle(baseMovie.id)
+    func toggleMyList() {
+        isInMyList = favoritesStore.toggle(baseMovie.id)
     }
 
     func toggleOverviewExpanded() {

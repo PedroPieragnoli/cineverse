@@ -55,14 +55,14 @@
 /* Accessibility label for the detail header back button */
 "detail.header.backButton" = "Voltar";
 
-/* Accessibility label for the detail header favorite button */
-"detail.header.favoriteButton" = "Favorito";
+/* Accessibility label for the detail header My List button */
+"detail.header.myListButton" = "Minha Lista";
 
-/* Accessibility value for favorite state enabled */
-"detail.favorite.state.on" = "Salvo";
+/* Accessibility value when the movie is in My List */
+"detail.myList.state.on" = "Na Minha Lista";
 
-/* Accessibility value for favorite state disabled */
-"detail.favorite.state.off" = "Não salvo";
+/* Accessibility value when the movie is not in My List */
+"detail.myList.state.off" = "Fora da Minha Lista";
 
 /* Rating percentage with score label on detail metadata */
 "detail.metadata.scoreFormat" = "%lld%% Pontuação";

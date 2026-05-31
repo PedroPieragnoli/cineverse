@@ -47,7 +47,7 @@ struct DetailViewModelTests {
         #expect(viewModel.cast.first?.name == "Brad Pitt")
         #expect(viewModel.cast.first?.character == "Tyler")
         #expect(viewModel.genreNames == ["Drama"])
-        #expect(viewModel.isFavorite)
+        #expect(viewModel.isInMyList)
     }
 
     @Test("loadInitialData stores failure state")
@@ -197,32 +197,32 @@ struct DetailViewModelTests {
         #expect(viewModel.yearRuntimeText.hasPrefix("2024 • "))
     }
 
-    // MARK: - Favorites
+    // MARK: - My List
 
-    @Test("toggleFavorite updates persisted state")
-    func toggleFavoriteUpdatesState() {
+    @Test("toggleMyList updates persisted state")
+    func toggleMyListUpdatesState() {
         let (viewModel, _, favoritesStore) = makeViewModel(id: 777)
 
-        #expect(!viewModel.isFavorite)
+        #expect(!viewModel.isInMyList)
 
-        viewModel.toggleFavorite()
-        #expect(viewModel.isFavorite)
+        viewModel.toggleMyList()
+        #expect(viewModel.isInMyList)
         #expect(favoritesStore.contains(777))
 
-        viewModel.toggleFavorite()
-        #expect(!viewModel.isFavorite)
+        viewModel.toggleMyList()
+        #expect(!viewModel.isInMyList)
         #expect(!favoritesStore.contains(777))
     }
 
-    @Test("toggleFavorite removes a movie when it starts favorited")
-    func toggleFavoriteRemovesWhenAlreadyFavorite() {
+    @Test("toggleMyList removes a movie when it starts in My List")
+    func toggleMyListRemovesWhenAlreadyInMyList() {
         let (viewModel, _, favoritesStore) = makeViewModel(id: 42, favoriteIDs: [42])
 
-        #expect(viewModel.isFavorite)
+        #expect(viewModel.isInMyList)
 
-        viewModel.toggleFavorite()
+        viewModel.toggleMyList()
 
-        #expect(!viewModel.isFavorite)
+        #expect(!viewModel.isInMyList)
         #expect(!favoritesStore.contains(42))
     }
 
