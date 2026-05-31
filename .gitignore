@@ -67,3 +67,7 @@ graph.png
 
 # Local secrets
 Config/Secrets.xcconfig
+
+# sourcekit-lsp / xcode-build-server (absolute paths, machine-local)
+buildServer.json
+.compile
