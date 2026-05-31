@@ -95,6 +95,83 @@ struct HomeViewModelTests {
         #expect(viewModel.newReleases.map(\.id) == [newReleaseMovie.id])
         #expect(viewModel.sections.count == 1)
     }
+
+    // MARK: - My List
+
+    @Test("loadInitialData seeds the featured My List state from the store")
+    func loadInitialDataSeedsFeaturedMyListState() async {
+        let (viewModel, _, _) = makeViewModel(featuredID: 55, favoriteIDs: [55])
+
+        #expect(viewModel.isFeaturedMovieInMyList == false)
+
+        await viewModel.loadInitialData()
+
+        #expect(viewModel.isFeaturedMovieInMyList)
+    }
+
+    @Test("didTapMyList adds the featured movie to the store")
+    func didTapMyListAddsFeaturedMovie() async {
+        let (viewModel, store, _) = await makeLoadedViewModel(featuredID: 60)
+
+        viewModel.didTapMyList()
+
+        #expect(viewModel.isFeaturedMovieInMyList)
+        #expect(store.toggledIDs == [60])
+        #expect(store.contains(60))
+    }
+
+    @Test("didTapMyList removes the featured movie when it is already in My List")
+    func didTapMyListRemovesWhenAlreadyInMyList() async {
+        let (viewModel, store, _) = await makeLoadedViewModel(
+            featuredID: 61,
+            favoriteIDs: [61]
+        )
+
+        #expect(viewModel.isFeaturedMovieInMyList)
+
+        viewModel.didTapMyList()
+
+        #expect(viewModel.isFeaturedMovieInMyList == false)
+        #expect(store.toggledIDs == [61])
+        #expect(store.contains(61) == false)
+    }
+
+    @Test("didTapMyList does nothing when there is no featured movie")
+    func didTapMyListWithoutFeaturedMovieDoesNothing() async {
+        let (viewModel, store, _) = await makeLoadedViewModel(featuredID: nil)
+
+        viewModel.didTapMyList()
+
+        #expect(viewModel.isFeaturedMovieInMyList == false)
+        #expect(store.toggledIDs.isEmpty)
+    }
+
+    @Test("refreshMyListState re-reads the store after an external toggle")
+    func refreshMyListStateRereadsStore() async {
+        let (viewModel, store, _) = await makeLoadedViewModel(featuredID: 62)
+
+        store.addForArrange(62)
+        #expect(viewModel.isFeaturedMovieInMyList == false)
+
+        viewModel.refreshMyListState()
+
+        #expect(viewModel.isFeaturedMovieInMyList)
+        #expect(store.toggledIDs.isEmpty)
+    }
+
+    @Test("refreshMyListState clears the state without consulting the store when there is no featured movie")
+    func refreshMyListStateClearsWithoutFeaturedMovie() async {
+        let (viewModel, store, _) = await makeLoadedViewModel(
+            featuredID: nil,
+            favoriteIDs: [70]
+        )
+        store.resetQueryLog()
+
+        viewModel.refreshMyListState()
+
+        #expect(viewModel.isFeaturedMovieInMyList == false)
+        #expect(store.containsQueries.isEmpty)
+    }
 }
 
 @MainActor
@@ -134,4 +211,74 @@ private func makeMovie(
         voteAverage: 7.0,
         voteCount: 90
     )
+}
+
+private final class FavoriteMoviesStoreSpy: FavoriteMoviesStore, @unchecked Sendable {
+    private(set) var toggledIDs: [Int] = []
+    private(set) var containsQueries: [Int] = []
+    private var favoriteIDs: Set<Int>
+
+    init(initialFavoriteIDs: Set<Int> = []) {
+        self.favoriteIDs = initialFavoriteIDs
+    }
+
+    func contains(_ movieID: Int) -> Bool {
+        containsQueries.append(movieID)
+        return favoriteIDs.contains(movieID)
+    }
+
+    @discardableResult
+    func toggle(_ movieID: Int) -> Bool {
+        toggledIDs.append(movieID)
+
+        if favoriteIDs.contains(movieID) {
+            favoriteIDs.remove(movieID)
+        } else {
+            favoriteIDs.insert(movieID)
+        }
+
+        return favoriteIDs.contains(movieID)
+    }
+
+    /// Simulates a change made outside the view model under test, without
+    /// polluting `toggledIDs` — that log records only calls the view model made.
+    func addForArrange(_ movieID: Int) {
+        favoriteIDs.insert(movieID)
+    }
+
+    func resetQueryLog() {
+        containsQueries.removeAll()
+    }
+}
+
+@MainActor
+private func makeViewModel(
+    featuredID: Int?,
+    favoriteIDs: Set<Int> = []
+) -> (viewModel: HomeViewModel, store: FavoriteMoviesStoreSpy, featured: FeaturedMovie?) {
+    let featured = featuredID.map { FeaturedMovie(movie: makeMovie(id: $0), allGenres: []) }
+    let payload = HomePayload(
+        featuredMovie: featured,
+        trendingMovies: [],
+        newReleases: [],
+        continueWatching: []
+    )
+    let store = FavoriteMoviesStoreSpy(initialFavoriteIDs: favoriteIDs)
+    let viewModel = HomeViewModel(
+        repository: HomeRepositorySpy(result: .success(payload)),
+        favoritesStore: store
+    )
+
+    return (viewModel, store, featured)
+}
+
+@MainActor
+private func makeLoadedViewModel(
+    featuredID: Int?,
+    favoriteIDs: Set<Int> = []
+) async -> (viewModel: HomeViewModel, store: FavoriteMoviesStoreSpy, featured: FeaturedMovie?) {
+    let made = makeViewModel(featuredID: featuredID, favoriteIDs: favoriteIDs)
+    await made.viewModel.loadInitialData()
+
+    return made
 }

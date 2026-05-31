@@ -49,6 +49,9 @@ struct MainTabView: View {
             }
         }
         .tint(.white)
+        .onChange(of: detailCoordinator.isDetailPresented) { _, isPresented in
+            if !isPresented { handleDetailDismissed() }
+        }
         .onDisappear {
             heroAnimator.cancelAll()
         }
@@ -212,6 +215,11 @@ extension MainTabView {
             heroAnimator.clearOverlay()
             heroAnimator.detailRevealOpacity = 0
         }
+    }
+
+    @MainActor
+    private func handleDetailDismissed() {
+        homeViewModel.refreshMyListState()
     }
 
     @MainActor

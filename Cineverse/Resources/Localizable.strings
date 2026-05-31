@@ -16,6 +16,12 @@
 /* Title for the hero add-to-list button on home screen */
 "home.heroButton.myList.title" = "My List";
 
+/* Accessibility value when the hero movie is in My List */
+"home.heroButton.myList.state.on" = "In My List";
+
+/* Accessibility value when the hero movie is not in My List */
+"home.heroButton.myList.state.off" = "Not in My List";
+
 /* Remaining watch time format */
 "continueWatching.remaining.left" = "%@ left";
 

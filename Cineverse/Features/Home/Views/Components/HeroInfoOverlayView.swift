@@ -20,8 +20,11 @@ struct HeroInfoOverlayView: View {
     let featuredMovie: FeaturedMovie
     let width: CGFloat
     let height: CGFloat
+    let isInMyList: Bool
     var onWatchTapped: (() -> Void)?
     var onMyListTapped: (() -> Void)?
+
+    @State private var myListTapCount = 0
 
     var body: some View {
         let contentWidth = width - 2 * DesignSystem.Layout.horizontalPadding
@@ -107,11 +110,21 @@ struct HeroInfoOverlayView: View {
 
     private var myListButton: some View {
         HeroActionButton(
-            iconSystemName: "plus",
+            iconSystemName: isInMyList ? "bookmark.fill" : "bookmark",
             titleKey: "home.heroButton.myList.title",
             style: .secondary
         ) {
+            myListTapCount += 1
             onMyListTapped?()
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: myListTapCount)
+        .accessibilityAddTraits(.isToggle)
+        .accessibilityValue(myListAccessibilityValue)
+    }
+
+    private var myListAccessibilityValue: String {
+        isInMyList
+            ? String(localized: "home.heroButton.myList.state.on")
+            : String(localized: "home.heroButton.myList.state.off")
     }
 }

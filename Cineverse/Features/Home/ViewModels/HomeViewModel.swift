@@ -9,8 +9,13 @@ import Foundation
 @Observable
 final class HomeViewModel {
     private let repository: HomeRepository
+    private let favoritesStore: FavoriteMoviesStore
 
-    private(set) var featuredMovie: FeaturedMovie?
+    private(set) var featuredMovie: FeaturedMovie? {
+        didSet { refreshMyListState() }
+    }
+
+    private(set) var isFeaturedMovieInMyList = false
     private(set) var continueWatching: [ContinueWatchingItem] = []
     private(set) var trendingMovies: [Movie] = []
     private(set) var newReleases: [Movie] = []
@@ -18,8 +23,12 @@ final class HomeViewModel {
     private(set) var error: Error?
     private(set) var hasLoadedInitialData = false
 
-    init(repository: HomeRepository = DefaultHomeRepository.live()) {
+    init(
+        repository: HomeRepository = DefaultHomeRepository.live(),
+        favoritesStore: FavoriteMoviesStore = UserDefaultsFavoriteMoviesStore()
+    ) {
         self.repository = repository
+        self.favoritesStore = favoritesStore
     }
 
     var sections: [HomeSection] {
@@ -58,14 +67,27 @@ final class HomeViewModel {
         }
     }
 
+    // MARK: - My List
+
+    func refreshMyListState() {
+        guard let featuredMovie else {
+            isFeaturedMovieInMyList = false
+            return
+        }
+
+        isFeaturedMovieInMyList = favoritesStore.contains(featuredMovie.id)
+    }
+
     // MARK: - Intents
 
     func didTapWatch(_ featured: FeaturedMovie) {
         print("Watch tapped: \(featured.movie.title)")
     }
 
-    func didTapMyList(_ featured: FeaturedMovie) {
-        print("My List tapped: \(featured.movie.title)")
+    func didTapMyList() {
+        guard let featuredMovie else { return }
+
+        isFeaturedMovieInMyList = favoritesStore.toggle(featuredMovie.id)
     }
 
     func didTapContinueWatching(_ item: ContinueWatchingItem) {

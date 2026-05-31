@@ -72,8 +72,9 @@ struct HomeView: View {
         if let featured = viewModel.featuredMovie {
             HeroSectionView(
                 featuredMovie: featured,
+                isInMyList: viewModel.isFeaturedMovieInMyList,
                 onWatchTapped: { handleWatchTapped(featured) },
-                onMyListTapped: { handleMyListTapped(featured) }
+                onMyListTapped: handleMyListTapped
             )
             .containerRelativeFrame(.vertical) { length, _ in
                 length * DesignSystem.Layout.heroHeightRatio
@@ -88,8 +89,8 @@ struct HomeView: View {
         onDetailRequested(DetailRoute(movie: featured.movie, source: .hero))
     }
 
-    private func handleMyListTapped(_ featured: FeaturedMovie) {
-        viewModel.didTapMyList(featured)
+    private func handleMyListTapped() {
+        viewModel.didTapMyList()
     }
 
     private func handleContinueWatchingTapped(_ item: ContinueWatchingItem) {

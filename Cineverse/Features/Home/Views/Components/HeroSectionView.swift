@@ -9,6 +9,7 @@ struct HeroSectionView: View {
     // MARK: - Properties
 
     let featuredMovie: FeaturedMovie
+    let isInMyList: Bool
     var onWatchTapped: (() -> Void)?
     var onMyListTapped: (() -> Void)?
 
@@ -31,6 +32,7 @@ struct HeroSectionView: View {
                     featuredMovie: featuredMovie,
                     width: geometry.size.width,
                     height: geometry.size.height,
+                    isInMyList: isInMyList,
                     onWatchTapped: onWatchTapped,
                     onMyListTapped: onMyListTapped
                 )
@@ -43,37 +45,44 @@ struct HeroSectionView: View {
 // MARK: - Previews
 
 #if DEBUG
-#Preview("Default") {
+private func previewContainer<Content: View>(
+    @ViewBuilder _ content: () -> Content
+) -> some View {
     ZStack {
         Color.black.ignoresSafeArea()
         ScrollView {
-            HeroSectionView(featuredMovie: .mock)
+            content()
         }
     }
     .preferredColorScheme(.dark)
+}
+
+#Preview("Default") {
+    previewContainer {
+        HeroSectionView(featuredMovie: .mock, isInMyList: false)
+    }
 }
 
 #Preview("With Actions") {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        ScrollView {
-            HeroSectionView(
-                featuredMovie: .mock,
-                onWatchTapped: { print("Watch tapped") },
-                onMyListTapped: { print("My List tapped") }
-            )
-        }
+    previewContainer {
+        HeroSectionView(
+            featuredMovie: .mock,
+            isInMyList: false,
+            onWatchTapped: { print("Watch tapped") },
+            onMyListTapped: { print("My List tapped") }
+        )
     }
-    .preferredColorScheme(.dark)
+}
+
+#Preview("In My List") {
+    previewContainer {
+        HeroSectionView(featuredMovie: .mock, isInMyList: true)
+    }
 }
 
 #Preview("Different Movie") {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        ScrollView {
-            HeroSectionView(featuredMovie: .mockMario)
-        }
+    previewContainer {
+        HeroSectionView(featuredMovie: .mockMario, isInMyList: false)
     }
-    .preferredColorScheme(.dark)
 }
 #endif
