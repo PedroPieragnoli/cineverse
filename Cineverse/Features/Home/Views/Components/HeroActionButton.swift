@@ -10,6 +10,11 @@ enum HeroActionButtonStyle {
     case secondary
 }
 
+/// A hero call-to-action button.
+///
+/// `Button` merges the icon and title into a **single** accessibility element
+/// labelled by `titleKey`, so callers can layer state onto it from outside —
+/// see `View.myListToggleAccessibility(_:)`. Keep it to one element.
 struct HeroActionButton: View {
     let iconSystemName: String
     let titleKey: LocalizedStringKey

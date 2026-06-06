@@ -108,9 +108,13 @@ struct HeroInfoOverlayView: View {
         }
     }
 
+    private var myListState: MyListToggleState {
+        MyListToggleState(isInMyList: isInMyList)
+    }
+
     private var myListButton: some View {
         HeroActionButton(
-            iconSystemName: isInMyList ? "bookmark.fill" : "bookmark",
+            iconSystemName: myListState.symbolName,
             titleKey: "home.heroButton.myList.title",
             style: .secondary
         ) {
@@ -118,13 +122,6 @@ struct HeroInfoOverlayView: View {
             onMyListTapped?()
         }
         .sensoryFeedback(.impact(weight: .light), trigger: myListTapCount)
-        .accessibilityAddTraits(.isToggle)
-        .accessibilityValue(myListAccessibilityValue)
-    }
-
-    private var myListAccessibilityValue: String {
-        isInMyList
-            ? String(localized: "home.heroButton.myList.state.on")
-            : String(localized: "home.heroButton.myList.state.off")
+        .myListToggleAccessibility(myListState)
     }
 }

@@ -96,16 +96,15 @@ struct DetailHeaderView: View {
         .buttonStyle(.plain)
         .sensoryFeedback(.impact(weight: .light), trigger: isInMyList)
         .accessibilityLabel(String(localized: "detail.header.myListButton"))
-        .accessibilityAddTraits(.isToggle)
-        .accessibilityValue(
-            isInMyList
-                ? String(localized: "detail.myList.state.on")
-                : String(localized: "detail.myList.state.off")
-        )
+        .myListToggleAccessibility(myListState)
+    }
+
+    private var myListState: MyListToggleState {
+        MyListToggleState(isInMyList: isInMyList)
     }
 
     private var myListIcon: some View {
-        Image(systemName: isInMyList ? "bookmark.fill" : "bookmark")
+        Image(systemName: myListState.symbolName)
             .font(.system(size: Layout.buttonIconSize, weight: .semibold))
             .foregroundStyle(isInMyList ? DesignSystem.Colors.primary : .white)
             .keyframeAnimator(

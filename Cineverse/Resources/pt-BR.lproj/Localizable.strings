@@ -10,17 +10,17 @@
 /* Accessibility label for the profile button in the home header */
 "accessibility.profileButton.label" = "Perfil";
 
+/* Accessibility value when a movie is in My List */
+"accessibility.myList.state.on" = "Na Minha Lista";
+
+/* Accessibility value when a movie is not in My List */
+"accessibility.myList.state.off" = "Fora da Minha Lista";
+
 /* Title for the hero play button on home screen */
 "home.heroButton.play.title" = "Assistir";
 
 /* Title for the hero add-to-list button on home screen */
 "home.heroButton.myList.title" = "Minha Lista";
-
-/* Accessibility value when the hero movie is in My List */
-"home.heroButton.myList.state.on" = "Na Minha Lista";
-
-/* Accessibility value when the hero movie is not in My List */
-"home.heroButton.myList.state.off" = "Fora da Minha Lista";
 
 /* Remaining watch time format */
 "continueWatching.remaining.left" = "%@ restantes";
@@ -63,12 +63,6 @@
 
 /* Accessibility label for the detail header My List button */
 "detail.header.myListButton" = "Minha Lista";
-
-/* Accessibility value when the movie is in My List */
-"detail.myList.state.on" = "Na Minha Lista";
-
-/* Accessibility value when the movie is not in My List */
-"detail.myList.state.off" = "Fora da Minha Lista";
 
 /* Rating percentage with score label on detail metadata */
 "detail.metadata.scoreFormat" = "%lld%% Pontuação";
