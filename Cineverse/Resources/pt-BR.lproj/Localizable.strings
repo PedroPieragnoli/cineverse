@@ -91,6 +91,12 @@
 /* Placeholder text in the search bar */
 "search.bar.placeholder" = "Buscar filmes, atores, gêneros…";
 
+/* VoiceOver label for the search text field */
+"search.bar.accessibilityLabel" = "Buscar filmes";
+
+/* VoiceOver label for the button that clears the search text */
+"search.bar.clear.accessibilityLabel" = "Limpar busca";
+
 /* Cancel button title on search bar */
 "search.bar.cancel" = "Cancelar";
 

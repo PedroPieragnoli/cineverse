@@ -47,6 +47,7 @@ struct SearchBarView: View {
         Image(systemName: "magnifyingglass")
             .font(.system(size: DesignSystem.Layout.iconSizeMd))
             .foregroundStyle(DesignSystem.Colors.placeholderText)
+            .accessibilityHidden(true)
     }
 
     private var textField: some View {
@@ -60,6 +61,8 @@ struct SearchBarView: View {
         .foregroundStyle(.white)
         .tint(DesignSystem.Colors.primary)
         .focused(isFocused)
+        .accessibilityLabel(String(localized: "search.bar.accessibilityLabel"))
+        .accessibilityValue(text)
     }
 
     private var clearButton: some View {
@@ -76,6 +79,7 @@ struct SearchBarView: View {
                 .background(DesignSystem.Colors.placeholderText, in: Circle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(String(localized: "search.bar.clear.accessibilityLabel"))
     }
 
     private var cancelButton: some View {
