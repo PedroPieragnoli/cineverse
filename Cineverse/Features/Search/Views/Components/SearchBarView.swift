@@ -8,6 +8,7 @@ import SwiftUI
 struct SearchBarView: View {
     private enum Layout {
         static let clearIconSize: CGFloat = 10
+        static let clearGlyphSize = DesignSystem.Layout.iconSizeMd
     }
 
     @Binding var text: String
@@ -72,11 +73,9 @@ struct SearchBarView: View {
             Image(systemName: "xmark")
                 .font(.system(size: Layout.clearIconSize, weight: .bold))
                 .foregroundStyle(DesignSystem.Colors.background)
-                .frame(
-                    width: DesignSystem.Layout.iconSizeMd,
-                    height: DesignSystem.Layout.iconSizeMd
-                )
+                .frame(width: Layout.clearGlyphSize, height: Layout.clearGlyphSize)
                 .background(DesignSystem.Colors.placeholderText, in: Circle())
+                .expandedHitArea(around: Layout.clearGlyphSize, upTo: DesignSystem.Layout.buttonHeight)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(String(localized: "search.bar.clear.accessibilityLabel"))
@@ -90,6 +89,8 @@ struct SearchBarView: View {
             Text(String(localized: "search.bar.cancel"))
                 .font(DesignSystem.Typography.body)
                 .foregroundStyle(DesignSystem.Colors.primary)
+                .frame(minHeight: DesignSystem.Layout.buttonHeight)
+                .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .transition(.opacity)
@@ -113,6 +114,15 @@ struct SearchBarView: View {
                         lineWidth: DesignSystem.Borders.standard
                     )
             }
+    }
+}
+
+private extension View {
+    func expandedHitArea(around contentSize: CGFloat, upTo minimum: CGFloat) -> some View {
+        let hitAreaPadding = max(0, (minimum - contentSize) / 2)
+        return padding(hitAreaPadding)
+            .contentShape(.rect)
+            .padding(-hitAreaPadding)
     }
 }
 
