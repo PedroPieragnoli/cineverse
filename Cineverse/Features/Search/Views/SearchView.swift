@@ -135,6 +135,8 @@ struct SearchView: View {
                 .frame(height: DesignSystem.Spacing.xxl)
                 .frame(maxWidth: .infinity)
                 .padding(.top, DesignSystem.Spacing.lg)
+                .accessibilityLabel(String(localized: "search.pagination.accessibilityLabel"))
+                .accessibilityAddTraits(.updatesFrequently)
         }
     }
 
@@ -146,7 +148,7 @@ struct SearchView: View {
                         Task { await viewModel.retryLoadGenres() }
                     }
                 } else {
-                    sectionTitle
+                    browseByGenreHeader
                     GenreGridView(items: viewModel.genreItems)
                 }
             }
@@ -155,11 +157,12 @@ struct SearchView: View {
         .scrollIndicators(.hidden)
     }
 
-    private var sectionTitle: some View {
+    private var browseByGenreHeader: some View {
         Text(String(localized: "search.browseByGenre.title"))
             .font(DesignSystem.Typography.sectionTitle)
             .foregroundStyle(.white)
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
+            .accessibilityAddTraits(.isHeader)
     }
 
     // MARK: - Actions

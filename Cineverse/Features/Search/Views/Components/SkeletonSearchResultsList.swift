@@ -11,9 +11,14 @@ struct SkeletonSearchResultsList: View {
     }
 
     var body: some View {
-        ForEach(0..<Layout.rowCount, id: \.self) { index in
-            SkeletonSearchResultRowView(showDivider: index < Layout.rowCount - 1)
+        VStack(spacing: 0) {
+            ForEach(0..<Layout.rowCount, id: \.self) { index in
+                SkeletonSearchResultRowView(showDivider: index < Layout.rowCount - 1)
+            }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(String(localized: "search.loading.accessibilityLabel"))
+        .accessibilityAddTraits(.updatesFrequently)
     }
 }
 

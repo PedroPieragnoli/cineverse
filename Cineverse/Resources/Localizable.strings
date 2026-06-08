@@ -118,6 +118,12 @@
 /* VoiceOver label for a search result's rating percentage */
 "search.result.score.accessibilityLabel" = "%lld percent score";
 
+/* VoiceOver label for the loading placeholder list */
+"search.loading.accessibilityLabel" = "Loading movies";
+
+/* VoiceOver label for the spinner shown while the next page loads */
+"search.pagination.accessibilityLabel" = "Loading more results";
+
 /* Empty state title when search returns no results */
 "search.emptyState.title" = "No movies found";
 
