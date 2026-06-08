@@ -52,6 +52,7 @@ struct SearchResultRowView: View {
             .buttonStyle(.plain)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(accessibilityDescription)
+            .accessibilityHidden(isSourceHidden)
 
             dividerLine
         }
@@ -130,7 +131,7 @@ struct SearchResultRowView: View {
     @ViewBuilder
     private var ratingBadge: some View {
         if item.hasRating {
-            Text("\(item.ratingPercentage)% Score")
+            Text(item.scoreText)
                 .font(DesignSystem.Typography.smallMetadataBold)
                 .foregroundStyle(DesignSystem.Colors.primary)
                 .padding(.top, Layout.ratingTopSpacing)
@@ -149,14 +150,18 @@ struct SearchResultRowView: View {
     // MARK: - Accessibility
 
     private var accessibilityDescription: String {
-        var parts = [item.title]
-        if !item.subtitle.isEmpty {
-            parts.append(item.subtitle)
-        }
-        if item.hasRating {
-            parts.append("\(item.ratingPercentage)% score")
-        }
-        return parts.joined(separator: ", ")
+        let parts: [String?] = [
+            item.title,
+            posterStateDescription,
+            item.accessibilitySubtitle.isEmpty ? nil : item.accessibilitySubtitle,
+            item.hasRating ? item.accessibilityScoreText : nil
+        ]
+        return parts.compactMap { $0 }.joined(separator: ", ")
+    }
+
+    private var posterStateDescription: String? {
+        guard item.posterURL != nil else { return DesignSystem.Strings.noImageAvailable }
+        return loadFailed ? DesignSystem.Strings.imageFailedToLoad : nil
     }
 }
 

@@ -7,6 +7,8 @@ import Testing
 @testable import Cineverse
 
 struct SearchResultRowItemTests {
+    private let bullet = "\u{2022}"
+
     private let allGenres = [
         Genre(id: 28, name: "Action"),
         Genre(id: 12, name: "Adventure"),
@@ -32,11 +34,12 @@ struct SearchResultRowItemTests {
         #expect(item.genreNames == ["Animation", "Adventure"])
     }
 
-    @Test("Builds subtitle with year and genres")
+    @Test("Separates year and genres with a bullet, and with a comma for VoiceOver")
     func buildsSubtitleWithYearAndGenres() {
         let item = SearchResultRowItem(movie: .mock, allGenres: allGenres)
 
-        #expect(item.subtitle == "2023 \u{2022} Action, Adventure")
+        #expect(item.subtitle == "2023 \(bullet) Action, Adventure")
+        #expect(item.accessibilitySubtitle == "2023, Action, Adventure")
     }
 
     @Test("Builds subtitle with year only when no genres match")
@@ -44,6 +47,7 @@ struct SearchResultRowItemTests {
         let item = SearchResultRowItem(movie: .mock, allGenres: [])
 
         #expect(item.subtitle == "2023")
+        #expect(item.accessibilitySubtitle == "2023")
     }
 
     @Test("Builds subtitle with genres only when no release date")
@@ -52,6 +56,7 @@ struct SearchResultRowItemTests {
         let item = SearchResultRowItem(movie: movie, allGenres: allGenres)
 
         #expect(item.subtitle == "Action, Adventure")
+        #expect(item.accessibilitySubtitle == "Action, Adventure")
     }
 
     @Test("Empty subtitle when no year and no matching genres")
@@ -60,6 +65,7 @@ struct SearchResultRowItemTests {
         let item = SearchResultRowItem(movie: movie, allGenres: allGenres)
 
         #expect(item.subtitle.isEmpty)
+        #expect(item.accessibilitySubtitle.isEmpty)
     }
 
     @Test("Has rating when vote average is positive")
@@ -75,6 +81,16 @@ struct SearchResultRowItemTests {
         let item = SearchResultRowItem(movie: .mockWithoutPoster, allGenres: allGenres)
 
         #expect(item.hasRating == false)
+    }
+
+    @Test("Score text substitutes the rating percentage into both registers")
+    func scoreTextSubstitutesPercentage() {
+        let item = SearchResultRowItem(movie: .mock, allGenres: allGenres)
+
+        #expect(item.scoreText.contains("65"))
+        #expect(item.accessibilityScoreText.contains("65"))
+        #expect(item.scoreText.contains("%lld") == false)
+        #expect(item.accessibilityScoreText.contains("%lld") == false)
     }
 
     @Test("Poster URL uses thumbnail size")

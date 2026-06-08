@@ -9,7 +9,8 @@ struct SearchResultRowItem: Identifiable {
     private enum Constants {
         static let maxDisplayedGenres = 2
         static let genreSeparator = ", "
-        static let metadataSeparator = " \u{2022} "
+        static let displaySeparator = " \u{2022} "
+        static let accessibilitySeparator = ", "
     }
 
     let movie: Movie
@@ -35,11 +36,22 @@ struct SearchResultRowItem: Identifiable {
             .map(\.name)
     }
 
-    var subtitle: String {
+    var subtitle: String { formattedSubtitle(separator: Constants.displaySeparator) }
+    var accessibilitySubtitle: String { formattedSubtitle(separator: Constants.accessibilitySeparator) }
+
+    var scoreText: String {
+        String(format: String(localized: "search.result.score"), ratingPercentage)
+    }
+
+    var accessibilityScoreText: String {
+        String(format: String(localized: "search.result.score.accessibilityLabel"), ratingPercentage)
+    }
+
+    private func formattedSubtitle(separator: String) -> String {
         let genres = genreNames.joined(separator: Constants.genreSeparator)
         return [releaseYear, genres]
             .filter { !$0.isEmpty }
-            .joined(separator: Constants.metadataSeparator)
+            .joined(separator: separator)
     }
 }
 

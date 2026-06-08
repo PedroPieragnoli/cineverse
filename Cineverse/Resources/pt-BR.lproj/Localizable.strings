@@ -112,6 +112,12 @@
 /* Retry button title on genre error state */
 "search.genreError.retryButton" = "Tentar novamente";
 
+/* Rating percentage with score label on a search result row */
+"search.result.score" = "%lld%% Pontuação";
+
+/* VoiceOver label for a search result's rating percentage */
+"search.result.score.accessibilityLabel" = "pontuação de %lld por cento";
+
 /* Empty state title when search returns no results */
 "search.emptyState.title" = "Nenhum filme encontrado";
 
