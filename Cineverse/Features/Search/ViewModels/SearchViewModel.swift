@@ -98,6 +98,17 @@ final class SearchViewModel {
         !isSearching && hasSearchQuery && searchResults.isEmpty && searchError == nil
     }
 
+    var searchOutcome: SearchOutcome {
+        if searchError != nil { return .error }
+        if showsEmptyState { return .empty }
+        return .results(count: searchResults.count)
+    }
+
+    var settledSearchOutcome: SearchOutcome? {
+        guard !isSearching, hasSearchQuery else { return nil }
+        return searchOutcome
+    }
+
     private var trimmedQuery: String {
         searchQuery.trimmingCharacters(in: .whitespaces)
     }

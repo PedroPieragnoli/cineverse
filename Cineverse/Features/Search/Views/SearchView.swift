@@ -41,6 +41,8 @@ struct SearchView: View {
 
     @FocusState private var isSearchBarFocused: Bool
 
+    @Environment(\.accessibilityVoiceOverEnabled) private var isVoiceOverEnabled
+
     // MARK: - Body
 
     var body: some View {
@@ -70,6 +72,9 @@ struct SearchView: View {
         .task {
             await viewModel.loadGenres()
         }
+        .onChange(of: viewModel.isSearching) { _, _ in
+            announceSearchOutcome()
+        }
     }
 
     // MARK: - Subviews
@@ -90,15 +95,18 @@ struct SearchView: View {
             LazyVStack(spacing: 0) {
                 if viewModel.isSearching {
                     SkeletonSearchResultsList()
-                } else if viewModel.searchError != nil {
-                    ErrorStateView(configuration: .searchError) {
-                        viewModel.retrySearch()
-                    }
-                } else if viewModel.showsEmptyState {
-                    SearchEmptyStateView()
                 } else {
-                    resultRows
-                    paginationSpinner
+                    switch viewModel.searchOutcome {
+                    case .error:
+                        ErrorStateView(configuration: .searchError) {
+                            viewModel.retrySearch()
+                        }
+                    case .empty:
+                        SearchEmptyStateView()
+                    case .results:
+                        resultRows
+                        paginationSpinner
+                    }
                 }
             }
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
@@ -163,6 +171,16 @@ struct SearchView: View {
             .foregroundStyle(.white)
             .padding(.horizontal, DesignSystem.Layout.horizontalPadding)
             .accessibilityAddTraits(.isHeader)
+    }
+
+    // MARK: - Accessibility
+
+    private func announceSearchOutcome() {
+        guard isVoiceOverEnabled, let outcome = viewModel.settledSearchOutcome else { return }
+
+        var announcement = AttributedString(outcome.announcement)
+        announcement.accessibilitySpeechAnnouncementPriority = .high
+        AccessibilityNotification.Announcement(announcement).post()
     }
 
     // MARK: - Actions

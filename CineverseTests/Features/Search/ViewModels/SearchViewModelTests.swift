@@ -270,6 +270,67 @@ struct SearchViewModelTests {
         #expect(viewModel.canLoadMore == false)
     }
 
+    // MARK: - Search Outcome
+
+    @Test("searchOutcome reports the loaded result count")
+    func searchOutcomeReportsResultCount() async {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.searchOutcome == .results(count: Movie.mockArray.count))
+    }
+
+    @Test("searchOutcome is empty when the search returns no results")
+    func searchOutcomeReportsEmpty() async {
+        let repository = SearchRepositorySpy(
+            searchResult: .success(MovieResponse(page: 1, results: [], totalPages: 1, totalResults: 0))
+        )
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "xyznonexistent"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.searchOutcome == .empty)
+    }
+
+    @Test("searchOutcome reports an error, which outranks the empty state")
+    func searchOutcomeReportsError() async {
+        let repository = SearchRepositorySpy(searchResult: .failure(TMDBNetworkingError.network))
+        let viewModel = SearchViewModel(repository: repository)
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(viewModel.searchResults.isEmpty)
+        #expect(viewModel.searchOutcome == .error)
+    }
+
+    @Test("settledSearchOutcome is nil while a search is still in flight")
+    func settledSearchOutcomeNilWhileSearching() {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+
+        viewModel.searchQuery = "batman"
+
+        #expect(viewModel.isSearching == true)
+        #expect(viewModel.settledSearchOutcome == nil)
+    }
+
+    @Test("settledSearchOutcome is nil once the field is cleared, so clearing announces nothing")
+    func settledSearchOutcomeNilAfterClearingTheField() async {
+        let viewModel = SearchViewModel(repository: SearchRepositorySpy())
+
+        viewModel.searchQuery = "batman"
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        #expect(viewModel.settledSearchOutcome == .results(count: Movie.mockArray.count))
+
+        viewModel.clearSearch()
+
+        #expect(viewModel.isSearching == false)
+        #expect(viewModel.settledSearchOutcome == nil)
+    }
+
     // MARK: - Search Error State
 
     @Test("performSearch sets searchError on failure")
