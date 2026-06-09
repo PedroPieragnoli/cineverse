@@ -8,6 +8,8 @@ import SwiftUI
 struct GenreCardView: View {
     private enum Layout {
         static let height: CGFloat = 100
+        static let scrimStart: CGFloat = 0.44
+        static let scrimOpacity: Double = 0.55
     }
 
     let item: GenreGradientItem
@@ -16,18 +18,28 @@ struct GenreCardView: View {
         NavigationLink(value: GenreResultsRoute(genre: item.genre, gradient: item.style)) {
             item.linearGradient
                 .frame(height: Layout.height)
+                .overlay { labelScrim }
                 .clipShape(
                     RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.card, style: .continuous)
                 )
-                .overlay(alignment: .bottomLeading) {
-                    genreLabel
-                }
+                .overlay(alignment: .bottomLeading) { genreLabel }
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(item.genre.name))
     }
 
     // MARK: - Subviews
+
+    private var labelScrim: some View {
+        LinearGradient(
+            stops: [
+                .init(color: .clear, location: Layout.scrimStart),
+                .init(color: .black.opacity(Layout.scrimOpacity), location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
 
     private var genreLabel: some View {
         Text(item.genre.name)
