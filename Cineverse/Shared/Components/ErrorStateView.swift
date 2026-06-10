@@ -9,8 +9,8 @@ struct ErrorStateView: View {
     // MARK: - Layout Constants
 
     private enum Layout {
-        static let buttonVerticalPadding: CGFloat = 10
-        static let buttonHorizontalPadding: CGFloat = 24
+        static let retryButtonVerticalPadding: CGFloat = 10
+        static let retryButtonHorizontalPadding: CGFloat = 24
     }
 
     // MARK: - Properties
@@ -68,11 +68,12 @@ struct ErrorStateView: View {
             Text(String(localized: configuration.retryButtonKey))
                 .font(DesignSystem.Typography.buttonTitle)
                 .foregroundStyle(.white)
+                .padding(.vertical, Layout.retryButtonVerticalPadding)
+                .padding(.horizontal, Layout.retryButtonHorizontalPadding)
+                .frame(minHeight: DesignSystem.Layout.buttonHeight)
+                .background(DesignSystem.Colors.primary, in: .capsule)
+                .contentShape(.capsule)
         }
-        .padding(.vertical, Layout.buttonVerticalPadding)
-        .padding(.horizontal, Layout.buttonHorizontalPadding)
-        .background(DesignSystem.Colors.primary)
-        .clipShape(Capsule())
         .padding(.top, DesignSystem.Spacing.md)
     }
 }
