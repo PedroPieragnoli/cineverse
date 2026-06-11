@@ -14,25 +14,6 @@ struct SearchView: View {
         static let resultsEntryDelay: TimeInterval = 0.05
     }
 
-    // MARK: - Transitions
-
-    private static let genreExit: AnyTransition = .opacity
-        .combined(with: .offset(y: DesignSystem.Spacing.xs))
-        .animation(.easeOut(duration: Layout.genreExitDuration))
-
-    private static let genreEntry: AnyTransition = .opacity
-        .combined(with: .offset(y: DesignSystem.Spacing.xs))
-        .animation(.easeOut(duration: Layout.genreExitDuration))
-
-    private static let resultsEntry: AnyTransition = .opacity
-        .combined(with: .offset(y: DesignSystem.Spacing.sm))
-        .animation(.easeOut(duration: Layout.resultsEntryDuration)
-            .delay(Layout.resultsEntryDelay))
-
-    private static let resultsExit: AnyTransition = .opacity
-        .combined(with: .offset(y: DesignSystem.Spacing.sm))
-        .animation(.easeOut(duration: Layout.genreExitDuration))
-
     // MARK: - Properties
 
     let viewModel: SearchViewModel
@@ -42,6 +23,7 @@ struct SearchView: View {
     @FocusState private var isSearchBarFocused: Bool
 
     @Environment(\.accessibilityVoiceOverEnabled) private var isVoiceOverEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     // MARK: - Body
 
@@ -53,16 +35,13 @@ struct SearchView: View {
                     searchResultsContent
                         .zIndex(1)
                         .transition(.asymmetric(
-                            insertion: Self.resultsEntry,
-                            removal: Self.resultsExit
+                            insertion: resultsEntry,
+                            removal: resultsExit
                         ))
                 } else {
                     genreScrollContent
                         .zIndex(0)
-                        .transition(.asymmetric(
-                            insertion: Self.genreEntry,
-                            removal: Self.genreExit
-                        ))
+                        .transition(genreTransition)
                 }
             }
         }
@@ -75,6 +54,39 @@ struct SearchView: View {
         .onChange(of: viewModel.isSearching) { _, _ in
             announceSearchOutcome()
         }
+    }
+
+    // MARK: - Transitions
+
+    private var genreTransition: AnyTransition {
+        slideFade(
+            verticalOffset: DesignSystem.Spacing.xs,
+            animation: .easeOut(duration: Layout.genreExitDuration)
+        )
+    }
+
+    private var resultsEntry: AnyTransition {
+        slideFade(
+            verticalOffset: DesignSystem.Spacing.sm,
+            animation: .easeOut(duration: Layout.resultsEntryDuration).delay(Layout.resultsEntryDelay)
+        )
+    }
+
+    private var resultsExit: AnyTransition {
+        slideFade(
+            verticalOffset: DesignSystem.Spacing.sm,
+            animation: .easeOut(duration: Layout.genreExitDuration)
+        )
+    }
+
+    private func slideFade(verticalOffset: CGFloat, animation: Animation) -> AnyTransition {
+        if reduceMotion {
+            return .opacity.animation(animation)
+        }
+
+        return .opacity
+            .combined(with: .offset(y: verticalOffset))
+            .animation(animation)
     }
 
     // MARK: - Subviews

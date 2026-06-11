@@ -16,6 +16,7 @@ struct ShimmerModifier: ViewModifier {
 
     let delay: TimeInterval
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var phase: CGFloat = -1
 
     // MARK: - Body
@@ -24,7 +25,7 @@ struct ShimmerModifier: ViewModifier {
         content
             .overlay { shimmerOverlay }
             .mask { content }
-            .onAppear(perform: startAnimation)
+            .task(id: reduceMotion) { await startAnimation() }
     }
 
     // MARK: - Subviews
@@ -53,17 +54,20 @@ struct ShimmerModifier: ViewModifier {
 
     // MARK: - Animation
 
-    private func startAnimation() {
-        Task { @MainActor in
-            if delay > 0 {
-                try? await Task.sleep(for: .seconds(delay))
-            }
-            withAnimation(
-                .linear(duration: DesignSystem.Animation.shimmerDuration)
-                    .repeatForever(autoreverses: false)
-            ) {
-                phase = 1
-            }
+    @MainActor
+    private func startAnimation() async {
+        withAnimation(nil) { phase = -1 }
+
+        guard !reduceMotion else { return }
+
+        if delay > 0 {
+            try? await Task.sleep(for: .seconds(delay))
+        }
+        withAnimation(
+            .linear(duration: DesignSystem.Animation.shimmerDuration)
+                .repeatForever(autoreverses: false)
+        ) {
+            phase = 1
         }
     }
 }
