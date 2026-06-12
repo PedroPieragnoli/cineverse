@@ -29,6 +29,7 @@ struct SearchEmptyStateView: View {
         Image(systemName: "magnifyingglass")
             .font(.system(size: Layout.iconSize))
             .foregroundStyle(DesignSystem.Colors.secondaryText)
+            .accessibilityHidden(true)
     }
 
     private var title: some View {
