@@ -46,7 +46,6 @@ struct MoviePosterCardView: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityDescription)
         .onChange(of: movie.posterURL) { _, _ in
             loadFailed = false

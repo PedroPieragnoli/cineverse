@@ -50,7 +50,6 @@ struct SearchResultRowView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityElement(children: .ignore)
             .accessibilityLabel(accessibilityDescription)
             .accessibilityHidden(isSourceHidden)
 
