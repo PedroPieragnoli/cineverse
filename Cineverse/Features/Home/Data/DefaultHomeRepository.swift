@@ -58,11 +58,12 @@ struct DefaultHomeRepository: HomeRepository {
         genres: Result<GenreResponse, Error>,
         continueWatching: Result<[ContinueWatchingItem], Error>
     ) -> HomePayload {
-        let trendingMovies = trending.value?.results ?? []
+        let allTrendingMovies = trending.value?.results ?? []
         let newReleases = upcoming.value?.results ?? []
         let allGenres = genres.value?.genres ?? []
         let continueWatchingItems = continueWatching.value ?? []
-        let featuredMovie = makeFeaturedMovie(from: trendingMovies, genres: allGenres)
+        let featuredMovie = makeFeaturedMovie(from: allTrendingMovies, genres: allGenres)
+        let trendingMovies = allTrendingMovies.filter { $0.id != featuredMovie?.id }
 
         return HomePayload(
             featuredMovie: featuredMovie,

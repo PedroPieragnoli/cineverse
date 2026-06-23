@@ -10,17 +10,18 @@ import Testing
 struct DefaultHomeRepositoryTests {
     @Test("Repository maps successful responses into home payload")
     func mapsSuccessfulResponses() async throws {
-        let trendingMovie = makeMovie(id: 1, backdropPath: "/hero.jpg", genreIds: [28], releaseDate: "2024-05-10")
+        let featuredMovie = makeMovie(id: 1, backdropPath: "/hero.jpg", genreIds: [28], releaseDate: "2024-05-10")
         let upcomingMovie = makeMovie(id: 2, backdropPath: "/upcoming.jpg", genreIds: [12], releaseDate: "2024-06-12")
         let continueItem = ContinueWatchingItem(
             movie: makeMovie(id: 3),
             progress: 0.3,
             remainingSeconds: 1_200
         )
+        let trendingMovie = makeMovie(id: 4)
 
         let repository = DefaultHomeRepository(
             remoteDataSource: HomeRemoteDataSourceStub(
-                trending: .success(makeMovieResponse([trendingMovie])),
+                trending: .success(makeMovieResponse([featuredMovie, trendingMovie])),
                 upcoming: .success(makeMovieResponse([upcomingMovie])),
                 genres: .success(
                     GenreResponse(genres: [
@@ -36,7 +37,7 @@ struct DefaultHomeRepositoryTests {
 
         let payload = try await repository.fetchHomePayload()
 
-        #expect(payload.trendingMovies.map(\.id) == [1])
+        #expect(payload.trendingMovies.map(\.id) == [4])
         #expect(payload.newReleases.map(\.id) == [2])
         #expect(payload.continueWatching.map(\.id) == [3])
         #expect(payload.featuredMovie?.id == 1)
@@ -80,13 +81,77 @@ struct DefaultHomeRepositoryTests {
         let payload = try await repository.fetchHomePayload()
 
         #expect(payload.featuredMovie?.id == 21)
+        #expect(payload.trendingMovies.map(\.id) == [22])
+    }
+
+    @Test("Featured movie is removed from trending, order preserved")
+    func featuredMovieIsRemovedFromTrending() async throws {
+        let repository = DefaultHomeRepository(
+            remoteDataSource: HomeRemoteDataSourceStub(
+                trending: .success(
+                    makeMovieResponse([
+                        makeMovie(id: 54, backdropPath: nil),
+                        makeMovie(id: 52, backdropPath: "/featured.jpg"),
+                        makeMovie(id: 53),
+                        makeMovie(id: 51)
+                    ])
+                ),
+                upcoming: .success(makeMovieResponse([])),
+                genres: .success(GenreResponse(genres: []))
+            ),
+            continueWatchingStore: ContinueWatchingStoreStub(result: .success([]))
+        )
+
+        let payload = try await repository.fetchHomePayload()
+
+        #expect(payload.featuredMovie?.id == 52)
+        #expect(payload.trendingMovies.map(\.id) == [54, 53, 51])
+    }
+
+    @Test("Trending with only the featured movie throws empty critical content")
+    func trendingWithOnlyFeaturedMovieThrowsEmptyCriticalContent() async {
+        let repository = DefaultHomeRepository(
+            remoteDataSource: HomeRemoteDataSourceStub(
+                trending: .success(makeMovieResponse([makeMovie(id: 61)])),
+                upcoming: .success(makeMovieResponse([])),
+                genres: .success(GenreResponse(genres: []))
+            ),
+            continueWatchingStore: ContinueWatchingStoreStub(result: .success([]))
+        )
+
+        await #expect(throws: HomeLoadError.emptyCriticalContent) {
+            _ = try await repository.fetchHomePayload()
+        }
+    }
+
+    @Test("Trending with only the featured movie still loads when other sections have content")
+    func trendingWithOnlyFeaturedMovieLoadsWhenOtherSectionsHaveContent() async throws {
+        let repository = DefaultHomeRepository(
+            remoteDataSource: HomeRemoteDataSourceStub(
+                trending: .success(makeMovieResponse([makeMovie(id: 71)])),
+                upcoming: .success(makeMovieResponse([makeMovie(id: 72)])),
+                genres: .success(GenreResponse(genres: []))
+            ),
+            continueWatchingStore: ContinueWatchingStoreStub(result: .success([]))
+        )
+
+        let payload = try await repository.fetchHomePayload()
+
+        #expect(payload.featuredMovie?.id == 71)
+        #expect(payload.trendingMovies.isEmpty)
+        #expect(payload.newReleases.map(\.id) == [72])
     }
 
     @Test("Genre failure does not block featured movie mapping")
     func genreFailureDoesNotBlockPayload() async throws {
         let repository = DefaultHomeRepository(
             remoteDataSource: HomeRemoteDataSourceStub(
-                trending: .success(makeMovieResponse([makeMovie(id: 31, genreIds: [28])])),
+                trending: .success(
+                    makeMovieResponse([
+                        makeMovie(id: 31, genreIds: [28]),
+                        makeMovie(id: 32)
+                    ])
+                ),
                 upcoming: .success(makeMovieResponse([])),
                 genres: .failure(TMDBNetworkingError.network)
             ),
@@ -95,7 +160,7 @@ struct DefaultHomeRepositoryTests {
 
         let payload = try await repository.fetchHomePayload()
 
-        #expect(payload.trendingMovies.map(\.id) == [31])
+        #expect(payload.trendingMovies.map(\.id) == [32])
         #expect(payload.featuredMovie?.id == 31)
     }
 
@@ -103,7 +168,7 @@ struct DefaultHomeRepositoryTests {
     func continueWatchingFailureDoesNotBlockRemoteContent() async throws {
         let repository = DefaultHomeRepository(
             remoteDataSource: HomeRemoteDataSourceStub(
-                trending: .success(makeMovieResponse([makeMovie(id: 41)])),
+                trending: .success(makeMovieResponse([makeMovie(id: 41), makeMovie(id: 42)])),
                 upcoming: .failure(TMDBNetworkingError.network),
                 genres: .success(GenreResponse(genres: []))
             ),
@@ -114,7 +179,8 @@ struct DefaultHomeRepositoryTests {
 
         let payload = try await repository.fetchHomePayload()
 
-        #expect(payload.trendingMovies.map(\.id) == [41])
+        #expect(payload.featuredMovie?.id == 41)
+        #expect(payload.trendingMovies.map(\.id) == [42])
         #expect(payload.newReleases.isEmpty)
         #expect(payload.continueWatching.isEmpty)
     }
