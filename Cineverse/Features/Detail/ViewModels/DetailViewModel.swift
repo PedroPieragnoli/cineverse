@@ -10,6 +10,8 @@ import Foundation
 final class DetailViewModel {
     private enum Constants {
         static let entranceStagger: Duration = .milliseconds(50)
+        static let displaySeparator = " • "
+        static let accessibilitySeparator = ", "
     }
 
     private let repository: DetailRepository
@@ -68,9 +70,11 @@ final class DetailViewModel {
     }
 
     var yearRuntimeText: String {
-        [releaseYear, runtimeText]
-            .compactMap { $0 }
-            .joined(separator: " • ")
+        formattedYearRuntime(separator: Constants.displaySeparator, runtimeUnitsStyle: .abbreviated)
+    }
+
+    var accessibilityYearRuntimeText: String {
+        formattedYearRuntime(separator: Constants.accessibilitySeparator, runtimeUnitsStyle: .full)
     }
 
     var genreNames: [String] {
@@ -85,14 +89,23 @@ final class DetailViewModel {
         movieDetail?.releaseYear ?? baseMovie.releaseYear
     }
 
-    private var runtimeText: String? {
+    private func formattedYearRuntime(
+        separator: String,
+        runtimeUnitsStyle: DateComponentsFormatter.UnitsStyle
+    ) -> String {
+        [releaseYear, runtimeText(unitsStyle: runtimeUnitsStyle)]
+            .compactMap { $0 }
+            .joined(separator: separator)
+    }
+
+    private func runtimeText(unitsStyle: DateComponentsFormatter.UnitsStyle) -> String? {
         guard let minutes = movieDetail?.runtimeMinutes, minutes > 0 else {
             return nil
         }
         let seconds = minutes * 60
         return DurationTextFormatter.string(
             from: seconds,
-            unitsStyle: .abbreviated
+            unitsStyle: unitsStyle
         )
     }
 

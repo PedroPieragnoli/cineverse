@@ -159,6 +159,7 @@ struct DetailViewModelTests {
         #expect(viewModel.posterURL == Movie.previewPosterURL(forID: 7))
         #expect(viewModel.ratingPercentage == 70)
         #expect(viewModel.yearRuntimeText == "2024")
+        #expect(viewModel.accessibilityYearRuntimeText == "2024")
     }
 
     // MARK: - Derived Text
@@ -177,24 +178,43 @@ struct DetailViewModelTests {
         #expect(viewModel.genreNames == ["Action", "Adventure"])
     }
 
-    @Test("yearRuntimeText shows only the year when runtime is zero")
-    func yearRuntimeTextOmitsRuntimeWhenZero() async {
+    @Test("Year/runtime texts show only the year when runtime is zero")
+    func yearRuntimeTextsOmitRuntimeWhenZero() async {
         let payload = makePayload(id: 1, runtime: 0)
         let (viewModel, _, _) = makeViewModel(id: 1, result: .success(payload))
 
         await viewModel.loadInitialData()
 
         #expect(viewModel.yearRuntimeText == "2024")
+        #expect(viewModel.accessibilityYearRuntimeText == "2024")
     }
 
-    @Test("yearRuntimeText joins year and runtime with bullet separator")
-    func yearRuntimeTextJoinsYearAndRuntime() async {
-        let payload = makePayload(id: 1, runtime: 124)
+    @Test("yearRuntimeText joins year and abbreviated runtime with bullet separator")
+    func yearRuntimeTextJoinsYearAndRuntime() async throws {
+        let runtimeMinutes = 124
+        let payload = makePayload(id: 1, runtime: runtimeMinutes)
         let (viewModel, _, _) = makeViewModel(id: 1, result: .success(payload))
 
         await viewModel.loadInitialData()
 
-        #expect(viewModel.yearRuntimeText.hasPrefix("2024 • "))
+        let abbreviatedRuntime = try #require(
+            DurationTextFormatter.string(from: runtimeMinutes * 60, unitsStyle: .abbreviated)
+        )
+        #expect(viewModel.yearRuntimeText == "2024 • \(abbreviatedRuntime)")
+    }
+
+    @Test("accessibilityYearRuntimeText joins year and spelled-out runtime with a comma")
+    func accessibilityYearRuntimeTextUsesCommaAndFullRuntime() async throws {
+        let runtimeMinutes = 124
+        let payload = makePayload(id: 1, runtime: runtimeMinutes)
+        let (viewModel, _, _) = makeViewModel(id: 1, result: .success(payload))
+
+        await viewModel.loadInitialData()
+
+        let fullRuntime = try #require(
+            DurationTextFormatter.string(from: runtimeMinutes * 60, unitsStyle: .full)
+        )
+        #expect(viewModel.accessibilityYearRuntimeText == "2024, \(fullRuntime)")
     }
 
     // MARK: - My List

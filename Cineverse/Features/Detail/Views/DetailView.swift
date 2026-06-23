@@ -188,6 +188,7 @@ struct DetailView: View {
                 title: viewModel.title,
                 ratingText: viewModel.ratingText,
                 yearRuntimeText: viewModel.yearRuntimeText,
+                accessibilityYearRuntimeText: viewModel.accessibilityYearRuntimeText,
                 genreNames: viewModel.genreNames
             ),
             presentation: .init(

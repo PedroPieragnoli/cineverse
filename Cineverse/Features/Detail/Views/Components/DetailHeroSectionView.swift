@@ -21,6 +21,7 @@ struct DetailHeroSectionView: View {
         let title: String
         let ratingText: String
         let yearRuntimeText: String
+        let accessibilityYearRuntimeText: String
         let genreNames: [String]
     }
 
@@ -184,6 +185,7 @@ struct DetailHeroSectionView: View {
                 Text(metadata.yearRuntimeText)
                     .font(DesignSystem.Typography.detailCaption)
                     .foregroundStyle(DesignSystem.Colors.metadataText)
+                    .accessibilityLabel(metadata.accessibilityYearRuntimeText)
             }
 
             genreTags
@@ -253,6 +255,7 @@ private let previewEntranceAnimation: Animation = .interpolatingSpring(
             title: movie.title,
             ratingText: "\(movie.ratingPercentage)% Score",
             yearRuntimeText: "\(movie.releaseYear ?? "—") • 3h 12m",
+            accessibilityYearRuntimeText: "\(movie.releaseYear ?? "—"), 3 hours, 12 minutes",
             genreNames: [
                 Genre.scienceFiction.name,
                 Genre.adventure.name,
@@ -285,6 +288,7 @@ private let previewEntranceAnimation: Animation = .interpolatingSpring(
             title: movie.title,
             ratingText: "0% Score",
             yearRuntimeText: "",
+            accessibilityYearRuntimeText: "",
             genreNames: []
         ),
         presentation: .init(
@@ -313,6 +317,7 @@ private let previewEntranceAnimation: Animation = .interpolatingSpring(
             title: movie.title,
             ratingText: "70% Score",
             yearRuntimeText: "2020",
+            accessibilityYearRuntimeText: "2020",
             genreNames: []
         ),
         presentation: .init(
