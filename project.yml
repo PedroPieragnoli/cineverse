@@ -36,6 +36,8 @@ schemes:
       config: Debug
     test:
       config: Debug
+      language: en
+      region: US
       targets:
         - name: CineverseTests
         - name: CineverseUITests
