@@ -70,9 +70,7 @@ struct DetailHeroSectionView: View {
         heroPoster
             .frame(width: Layout.posterWidth, height: Layout.posterHeight)
             .background(posterFrameReporter)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(metadata.title))
-            .accessibilityAddTraits(.isImage)
+            .accessibilityHidden(true)
     }
 
     private var posterFrameReporter: some View {
