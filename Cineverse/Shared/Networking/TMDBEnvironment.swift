@@ -34,13 +34,17 @@ struct TMDBEnvironment {
     ) -> TMDBEnvironment {
         make(
             infoDictionary: bundle.infoDictionary ?? [:],
-            locale: locale
+            localization: bundle.preferredLocalizations.first,
+            region: locale.region?.identifier
         )
     }
 
+    /// `localization` is the language the app's UI resolved to (`"pt-BR"`, `"en"`), so TMDB content matches the UI.
+    /// The locale's bare language code would send `"pt"`, which TMDB serves as European Portuguese.
     static func make(
         infoDictionary: [String: Any],
-        locale: Locale
+        localization: String?,
+        region: String?
     ) -> TMDBEnvironment {
         let configuredBaseURLString = nonEmptyValue(
             infoDictionary["TMDB_BASE_URL"] as? String
@@ -51,14 +55,11 @@ struct TMDBEnvironment {
             infoDictionary["TMDB_READ_ACCESS_TOKEN"] as? String
         )
 
-        let localeLanguage = locale.language.languageCode?.identifier ?? defaultLanguage
-        let localeRegion = locale.region?.identifier ?? defaultRegion
-
         return TMDBEnvironment(
             baseURL: baseURL,
             readAccessToken: token,
-            language: localeLanguage,
-            region: localeRegion
+            language: localization ?? defaultLanguage,
+            region: region ?? defaultRegion
         )
     }
 
