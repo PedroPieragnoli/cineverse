@@ -41,6 +41,7 @@ struct MainTabView: View {
                     }
                 }
                 .allowsHitTesting(!detailCoordinator.isDetailPresented)
+                .accessibilityHidden(detailCoordinator.isDetailPresented)
 
                 detailOverlay(
                     containerFrame: geometry.frame(in: .global),
@@ -51,6 +52,9 @@ struct MainTabView: View {
         .tint(.white)
         .onChange(of: detailCoordinator.isDetailPresented) { _, isPresented in
             if !isPresented { handleDetailDismissed() }
+        }
+        .onChange(of: detailCoordinator.phase) { _, phase in
+            if phase == .detailVisible { handleDetailBecameVisible() }
         }
         .onDisappear {
             heroAnimator.cancelAll()
@@ -218,8 +222,14 @@ extension MainTabView {
     }
 
     @MainActor
+    private func handleDetailBecameVisible() {
+        AccessibilityNotification.ScreenChanged().post()
+    }
+
+    @MainActor
     private func handleDetailDismissed() {
         homeViewModel.refreshMyListState()
+        AccessibilityNotification.ScreenChanged().post()
     }
 
     @MainActor

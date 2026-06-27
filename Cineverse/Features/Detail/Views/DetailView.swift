@@ -73,6 +73,7 @@ struct DetailView: View {
                 headerSafeAreaFill
             }
         }
+        .accessibilityAction(.escape, handleBackButtonTap)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .task {
