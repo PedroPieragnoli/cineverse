@@ -1,9 +1,6 @@
 # Cineverse
 
-**A focused proof of the architecture, testing discipline, and Swift stack I bring to large iOS codebases.**
-
-Pedro Pieragnoli — iOS engineer, 5 years. 4.5 of them at enterprise scale on the Itaú banking app, via IBM.
-Open to remote iOS roles, contract or full-time — Brazil and global.
+**A SwiftUI movie browser on the TMDB API.**
 
 ![Swift 5](https://img.shields.io/badge/Swift-5-F05138?logo=swift&logoColor=white)
 ![iOS 18+](https://img.shields.io/badge/iOS-18%2B-000000?logo=apple&logoColor=white)
@@ -11,56 +8,41 @@ Open to remote iOS roles, contract or full-time — Brazil and global.
 ![Swift Testing](https://img.shields.io/badge/Swift%20Testing-30B0C7)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-<!-- MEDIA PENDING. Drop hero.gif, home.png, search.png, detail.png and accessibility.png
-     into docs/media/, then delete this wrapper line and the closing one below.
-     The markup between them is final. Capture guidance: readme publication spec, section 4 L3.
-
-<p align="center">
-  <img src="docs/media/hero.gif" alt="Cineverse — Home to Detail hero transition" width="300">
-</p>
-
-## Demo
-
-| Home | Search | Detail |
-|:-:|:-:|:-:|
-| ![Home](docs/media/home.png) | ![Search](docs/media/search.png) | ![Detail](docs/media/detail.png) |
-
-Accessibility pass (VoiceOver on Detail): ![Accessibility](docs/media/accessibility.png)
-
--->
-
 ## Highlights
 
-Each bullet pairs a capability with the technique and links to the code.
+- **MVVM with the data behind protocols.** Home, Search and Detail each have a repository protocol,
+  a TMDB remote data source and a preview repository, so view models are tested against fakes,
+  never the network. → [`Features/Detail/Data/`](Cineverse/Features/Detail/Data)
+- **Networking without third-party libraries.** A small `HTTPClient` protocol over `URLSession`, a
+  request builder and typed errors, with an `HTTPClientSpy` in the tests. Home loads its rows
+  concurrently with `async let`, and one failing row doesn't take the screen down. →
+  [`Shared/Networking/`](Cineverse/Shared/Networking) ·
+  [`DefaultHomeRepository`](Cineverse/Features/Home/Data/DefaultHomeRepository.swift)
+- **Hero transition, Home → Detail.** The poster frame travels between screens through a
+  `PreferenceKey`; `DetailHeroAnimator` and `DetailHeroCoordinator` drive it. A small pure policy
+  decides whether it runs: only from a poster card, with a valid frame, and with Reduce Motion off.
+  → [`Features/Main/`](Cineverse/Features/Main) ·
+  [`DetailPosterHeroTransitionPolicy`](Cineverse/Features/Detail/Models/DetailPosterHeroTransitionPolicy.swift)
+- **Parallax on Home.** The backdrop drifts slower than the scroll and stretches on pull-down. The
+  math sits in `HeroLayoutMetrics`, tested apart from the view. →
+  [`HeroLayoutMetrics.swift`](Cineverse/Features/Home/Views/Components/HeroLayoutMetrics.swift) ·
+  [`HeroLayoutMetricsTests`](CineverseTests/HeroLayoutMetricsTests.swift)
+- **Observation and Swift Concurrency.** `@Observable` instead of `ObservableObject`, and
+  `async/await` throughout.
+- **Accessibility.** Labels on interactive views; search rows and poster cards keep the native
+  Button trait (checked in Accessibility Inspector). Reduce Motion respected.
+- **Localized.** English and pt-BR, plurals included, via `String(localized:)`. TMDB content follows
+  the app's language (`pt-BR`, since bare `pt` returns European Portuguese).
 
-- **MVVM + protocol-driven data layer.** Every feature ships a `Repository` protocol, a
-  `Default*Repository`, a `*RemoteDataSource`, and a `Preview*Repository`, so views, view-models,
-  and tests swap implementations cleanly. → [`Features/Detail/Data/`](Cineverse/Features/Detail/Data)
-- **Hand-rolled, testable networking core.** No third-party HTTP dependency: `HTTPClient` protocol,
-  `URLSessionHTTPClient`, `TMDBRequestBuilder`, `TMDBEnvironment`, typed `TMDBNetworkingError`,
-  `APIRequest`. Exercised with an `HTTPClientSpy`. → [`Shared/Networking/`](Cineverse/Shared/Networking)
-- **Pure-logic policies, unit-tested.** Visibility and transition decisions live in `*Policy` types
-  with zero SwiftUI imports, testable without a UI. →
-  [`Features/Detail/Models/DetailOverviewToggleVisibilityPolicy.swift`](Cineverse/Features/Detail/Models/DetailOverviewToggleVisibilityPolicy.swift)
-- **Design system as code.** `DesignSystem.swift` is the single source of truth for color, radius,
-  spacing, and animation — no magic numbers in views. →
-  [`Shared/Utils/DesignSystem.swift`](Cineverse/Shared/Utils/DesignSystem.swift)
-- **Custom hero transition.** Home → Detail hands a poster frame across screens via a `PreferenceKey`
-  and a dedicated `DetailHeroAnimator` / `DetailHeroCoordinator`. → [`Features/Main/`](Cineverse/Features/Main)
-- **Reusable UI primitives.** `ShimmerModifier`, `SwipeToDismissModifier`, `ErrorStateView`, `TabItem`.
-  → [`Shared/Components/`](Cineverse/Shared/Components)
-- **Modern Swift stack.** `@Observable` (no `ObservableObject`); Swift Concurrency end-to-end.
-  Combine is intentionally omitted for this iOS 18 stack — it's in my toolbox and used routinely on
-  production apps; here `async/await` covers the surface without it.
-- **Accessibility-aware.** Labels and traits on interactive views; decorative content hidden; grouped
-  elements combined.
-- **Localized.** English + pt-BR via `String(localized:)`; TMDB content localized per device locale.
-- **Reproducible builds.** `project.yml` (XcodeGen) is the source of truth; SwiftLint runs as a pre-build step.
+## Search
+
+Browse by genre or search by title. Genre results paginate as you scroll. →
+[`Features/Search/`](Cineverse/Features/Search)
 
 ## Architecture
 
-MVVM with feature-based organization — each feature is self-contained and low-coupled; code used by
-two or more features lives in `Shared/`. Every feature follows one template:
+The app uses MVVM and is organized by feature. Code shared by two or more features goes in `Shared/`.
+Home, Search and Detail use the same folder layout:
 
 ```
 Features/<Feature>/
@@ -75,72 +57,74 @@ Features/<Feature>/
     Preview<Feature>Repository.swift      # preview / test double
 ```
 
-Shipped features: **Home** (hero carousel, sections), **Search** (genre grid, results, skeletons),
-**Detail** (hero poster, cast, synopsis toggle, swipe-to-dismiss), **Main** (tab bar + cross-screen
-hero animator). Cross-feature code sits in `Shared/`: `Networking/`, `Components/`, `Utils/`
-(`DesignSystem.swift`), `Extensions/`, `Models/`.
+The four features are Home, Search, Detail and Main. Main has no data layer: it holds the tab bar and
+the hero animator that runs across screens. `Shared/` holds networking, reusable components,
+`DesignSystem.swift`, extensions and shared models.
 
-**Constants convention:** `private enum Layout` for view-local geometry, `private enum Constants` in
-view-models / data types, `DesignSystem.*` for cross-feature tokens.
+Constants live in `private enum Layout` inside views (geometry), `private enum Constants` in view
+models and data types, and `DesignSystem` for tokens shared across features.
 
-### Scope and trade-offs
+### Scope
 
-Deliberately out of scope, to keep the surface focused on architecture and UI:
-
-- **Video playback** — there is no player; the Play button on Detail is visual only.
-- **Deeplinking / state restoration** — not wired; routing is in-app only.
-- **Authenticated accounts** — TMDB is read-only here; no login/session layer.
-
-The architecture is structured so each could be added without rewriting features.
+Not covered: video playback, deep links, state restoration and user accounts. The Play button is
+visual only, and TMDB is used read-only, with no login.
 
 ## Tech stack
 
-| Area | Choice | Why |
-|------|--------|-----|
-| UI | SwiftUI (iOS 18+) | Modern declarative stack |
-| State | `@Observable` | Observation framework, no `ObservableObject` boilerplate |
-| Concurrency | Swift Concurrency (`async/await`) | Structured concurrency end-to-end |
-| Networking | Custom `HTTPClient` + `URLSession` | No third-party HTTP dependency to audit or update |
-| Images | [Kingfisher](https://github.com/onevcat/Kingfisher) | Disk cache + placeholder/retry semantics `AsyncImage` doesn't give for free |
-| Tests | Swift Testing (`@Test`, `#expect`) | Current first-party test framework |
-| Project gen | XcodeGen | `project.yml` is the source of truth |
-| Lint | SwiftLint | Runs as a pre-build step |
+| Area | Choice |
+|------|--------|
+| UI | SwiftUI (iOS 18+) |
+| State | `@Observable` |
+| Concurrency | Swift Concurrency (`async/await`) |
+| Networking | Custom `HTTPClient` + `URLSession` |
+| Images | [Kingfisher](https://github.com/onevcat/Kingfisher) (disk cache, placeholders, retries) |
+| Tests | Swift Testing (`@Test`, `#expect`) |
+| Project gen | XcodeGen |
+| Lint | SwiftLint |
 
 ## Testing
 
-Swift Testing across networking, repositories, remote data sources, view-models, pure-logic policies,
-and models — with spy-based test doubles (`HTTPClientSpy`) so nothing hits the network. A representative
-policy test to land on:
+Tests use Swift Testing and cover networking, the data layer, view models and the pure-logic
+policies. Test doubles (`HTTPClientSpy` and fakes) keep them off the network. A typical policy test:
 [`DetailOverviewToggleVisibilityPolicyTests`](CineverseTests/Features/Detail/Models/DetailOverviewToggleVisibilityPolicyTests.swift).
+
+After `xcodegen generate` (see Getting started), run them with ⌘U in Xcode, or from the terminal with
+any iPhone simulator you have (`xcrun simctl list devices`):
 
 ```bash
 xcodebuild test -project Cineverse.xcodeproj -scheme Cineverse \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+  -destination 'platform=iOS Simulator,name=<your iPhone simulator>'
 ```
 
 ## Getting started
 
 ```bash
-brew install xcodegen swiftlint
-cp Config/Secrets.xcconfig.example Config/Secrets.xcconfig
-# Add your TMDB v4 read access token to Config/Secrets.xcconfig
+# Requires Xcode 16+ (iOS 18 SDK) and Homebrew
+brew install xcodegen
+cp Config/Secrets.xcconfig.example Config/Secrets.xcconfig   # paste your TMDB token
 xcodegen generate
-bash build.sh          # or: open Cineverse.xcodeproj
+open Cineverse.xcodeproj   # pick any iPhone simulator, ⌘R
 ```
 
-**TMDB token.** Get a free v4 *read access token* at themoviedb.org → Settings → API. It's injected
-via xcconfig → `Info.plist` substitution → read at runtime in `TMDBEnvironment.swift`. It is never
-hardcoded in source, and `Config/Secrets.xcconfig` is git-ignored.
+Optional: `brew install swiftlint` to lint on every build. `bash build.sh` regenerates the project, lints (strict) and builds for an iPhone 16 simulator.
+
+**TMDB token.** Get a free v4 *read access token* at themoviedb.org → Settings → API. The token goes
+from `Secrets.xcconfig` into `Info.plist` at build time, and `TMDBEnvironment.swift` reads it at
+runtime. It is never in source code, and `Config/Secrets.xcconfig` is git-ignored. Without a token the app still
+builds, but every TMDB request fails.
 
 ## Where to start reading
 
-- **Most-worked feature:** [`Features/Detail/`](Cineverse/Features/Detail) — hero transition, favorites, swipe-to-dismiss.
+- **Most-worked feature:** [`Features/Detail/`](Cineverse/Features/Detail) — My List, synopsis toggle, hero
+  poster; its hero transition lives in [`Features/Main/`](Cineverse/Features/Main) and swipe-to-dismiss in
+  [`SwipeToDismissModifier`](Cineverse/Shared/Components/SwipeToDismissModifier.swift).
 - **Networking pattern:** [`Shared/Networking/`](Cineverse/Shared/Networking).
 - **Design tokens:** [`Shared/Utils/DesignSystem.swift`](Cineverse/Shared/Utils/DesignSystem.swift).
 
 ## Contact
 
-Open to remote iOS roles, contract or full-time:\
+Built by Pedro Pieragnoli, an iOS engineer who spent 4.5 years at IBM on the Itaú banking app. Open
+to remote iOS roles, contract or full-time:\
 [pedropieragnoli.dev@gmail.com](mailto:pedropieragnoli.dev@gmail.com) ·
 [LinkedIn](https://www.linkedin.com/in/pedropieragnoli)
 
