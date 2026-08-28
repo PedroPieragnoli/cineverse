@@ -68,8 +68,8 @@ private func previewContainer<Content: View>(
         HeroSectionView(
             featuredMovie: .mock,
             isInMyList: false,
-            onWatchTapped: { print("Watch tapped") },
-            onMyListTapped: { print("My List tapped") }
+            onWatchTapped: {},
+            onMyListTapped: {}
         )
     }
 }

@@ -54,7 +54,7 @@ struct HomeView: View {
                     sections: viewModel.sections,
                     safeAreaBottomInset: safeAreaBottomInset,
                     hiddenTransitionSourceID: hiddenTransitionSourceID,
-                    onContinueWatchingTapped: handleContinueWatchingTapped,
+                    onContinueWatchingTapped: { _ in },
                     onMovieTapped: handleMovieTapped
                 )
             }
@@ -85,7 +85,6 @@ struct HomeView: View {
     // MARK: - Actions
 
     private func handleWatchTapped(_ featured: FeaturedMovie) {
-        viewModel.didTapWatch(featured)
         onDetailRequested(DetailRoute(movie: featured.movie, source: .hero))
     }
 
@@ -93,12 +92,7 @@ struct HomeView: View {
         viewModel.didTapMyList()
     }
 
-    private func handleContinueWatchingTapped(_ item: ContinueWatchingItem) {
-        viewModel.didTapContinueWatching(item)
-    }
-
     private func handleMovieTapped(_ movie: Movie, sourcePosterFrame: CGRect?, sourceTransitionID: String) {
-        viewModel.didTapMovie(movie)
         onDetailRequested(
             DetailRoute(
                 movie: movie,

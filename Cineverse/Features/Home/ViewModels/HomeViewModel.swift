@@ -80,21 +80,9 @@ final class HomeViewModel {
 
     // MARK: - Intents
 
-    func didTapWatch(_ featured: FeaturedMovie) {
-        print("Watch tapped: \(featured.movie.title)")
-    }
-
     func didTapMyList() {
         guard let featuredMovie else { return }
 
         isFeaturedMovieInMyList = favoritesStore.toggle(featuredMovie.id)
-    }
-
-    func didTapContinueWatching(_ item: ContinueWatchingItem) {
-        print("Continue watching: \(item.movie.title)")
-    }
-
-    func didTapMovie(_ movie: Movie) {
-        print("Movie tapped: \(movie.title)")
     }
 }
