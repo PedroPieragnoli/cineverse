@@ -207,9 +207,7 @@ struct DetailView: View {
             isVisible: viewModel.showsPlayButton,
             dismissInfoOpacity: dismissInfoOpacity,
             entranceAnimation: entranceAnimation
-        ) {
-            // TODO: wire play action when streaming is implemented
-        }
+        ) {}
     }
 
     private var synopsisSection: some View {
