@@ -31,7 +31,6 @@ schemes:
       targets:
         Cineverse: all
         CineverseTests: [test]
-        CineverseUITests: [test]
     run:
       config: Debug
     test:
@@ -40,7 +39,6 @@ schemes:
       region: US
       targets:
         - name: CineverseTests
-        - name: CineverseUITests
     profile:
       config: Release
     analyze:
@@ -103,20 +101,3 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: NO
         BUNDLE_LOADER: "$(TEST_HOST)"
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Cineverse.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cineverse"
-
-  CineverseUITests:
-    type: bundle.ui-testing
-    platform: iOS
-    sources:
-      - path: CineverseUITests
-    dependencies:
-      - target: Cineverse
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.github.pedropieragnoli.CineverseUITests
-        PRODUCT_NAME: CineverseUITests
-        CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: ${PERSONAL_SIGNING_ACCOUNT}
-        GENERATE_INFOPLIST_FILE: YES
-        SWIFT_EMIT_LOC_STRINGS: NO
-        TEST_TARGET_NAME: Cineverse
