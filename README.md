@@ -8,6 +8,15 @@
 ![Swift Testing](https://img.shields.io/badge/Swift%20Testing-30B0C7)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
+<p align="center">
+  <img src="docs/media/home-parallax.webp" alt="Home backdrop: parallax on scroll, stretch on pull-down" width="300">
+  <img src="docs/media/hero.webp" alt="Poster hero transition from Home to Detail and back" width="300">
+</p>
+<p align="center"><sub>
+  <b>Parallax</b> — the backdrop drifts behind the scroll and stretches on pull-down ·
+  <b>Hero transition</b> — the poster flies from Home to Detail and back
+</sub></p>
+
 ## Highlights
 
 - **MVVM with the data behind protocols.** Home, Search and Detail each have a repository protocol,
@@ -38,6 +47,22 @@
 
 Browse by genre or search by title. Genre results paginate as you scroll. →
 [`Features/Search/`](Cineverse/Features/Search)
+
+<p align="center">
+  <img src="docs/media/search.png" alt="Search screen: browse-by-genre grid" width="300">
+  <img src="docs/media/genre-results.webp" alt="Genre results: the banner title collapses into the navigation bar on scroll" width="300">
+</p>
+<p align="center"><sub>
+  <b>Genre grid</b> — one gradient per genre ·
+  <b>Genre results</b> — the banner title collapses into the nav bar as you scroll
+</sub></p>
+
+**Accessibility.** Accessibility Inspector on a search result row: one combined label, Button trait. →
+[`SearchResultRowView.swift`](Cineverse/Features/Search/Views/Components/SearchResultRowView.swift)
+
+<p align="center">
+  <img src="docs/media/accessibility.png" alt="Accessibility Inspector showing a search result row exposed as one Button with a combined label" width="600">
+</p>
 
 ## Architecture
 
